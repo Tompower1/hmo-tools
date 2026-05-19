@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HMO Market Viability Scorecard — The HMO Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { font-family: 'DM Sans', sans-serif; background: #0a1628; color: #ffffff; min-height: 100vh; overflow-x: hidden; width: 100%; max-width: 100vw; }
+
+    .page-header { background: #060f1d; border-bottom: 1px solid rgba(201,168,76,0.15); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: #C9A84C; }
+    .logo span { color: #ffffff; font-weight: 400; font-size: 14px; margin-left: 8px; }
+    .nav-pills { display: flex; gap: 6px; }
+    .nav-pill { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); white-space: nowrap; }
+    .nav-pill.active { background: rgba(201,168,76,0.15); color: #C9A84C; border-color: rgba(201,168,76,0.3); }
+
+    .content-area { max-width: 780px; margin: 0 auto; padding: 40px 20px 140px; width: 100%; }
+
+    .page-title { text-align: center; margin-bottom: 32px; }
+    .page-title .badge { display: inline-block; background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.3); border-radius: 20px; padding: 5px 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #C9A84C; margin-bottom: 14px; }
+    .page-title h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 8px; }
+    .page-title p { font-size: 15px; color: rgba(255,255,255,0.6); max-width: 600px; margin: 0 auto; }
+
+    .intro-block { background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 20px 24px; margin-bottom: 36px; }
+    .intro-block p { font-size: 14px; color: rgba(255,255,255,0.7); font-style: italic; line-height: 1.7; }
+
+    /* PROGRESS TRACKER */
+    .progress-tracker { display: flex; align-items: center; gap: 0; margin-bottom: 32px; }
+    .pt-step { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; position: relative; }
+    .pt-step:not(:last-child)::after { content: ''; position: absolute; top: 16px; left: 50%; width: 100%; height: 2px; background: rgba(255,255,255,0.08); z-index: 0; }
+    .pt-step.done:not(:last-child)::after { background: rgba(201,168,76,0.4); }
+    .pt-dot { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.4); z-index: 1; transition: all 0.3s; }
+    .pt-step.active .pt-dot { background: rgba(201,168,76,0.2); border-color: #C9A84C; color: #C9A84C; }
+    .pt-step.done .pt-dot { background: #C9A84C; border-color: #C9A84C; color: #0a1628; }
+    .pt-label { font-size: 10px; color: rgba(255,255,255,0.35); text-align: center; font-weight: 600; }
+    .pt-step.active .pt-label, .pt-step.done .pt-label { color: rgba(255,255,255,0.6); }
+
+    /* CATEGORY CARDS */
+    .category-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; margin-bottom: 24px; transition: border-color 0.3s; }
+    .category-card.answered { border-color: rgba(201,168,76,0.2); }
+    .category-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
+    .category-number { width: 36px; height: 36px; border-radius: 10px; background: rgba(201,168,76,0.12); color: #C9A84C; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; transition: all 0.3s; }
+    .category-card.answered .category-number { background: #C9A84C; color: #0a1628; }
+    .category-title h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #ffffff; }
+    .category-title .subtitle { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 4px; font-style: italic; }
+
+    /* RADIO OPTIONS */
+    .options-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .option-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); cursor: pointer; transition: all 0.2s; }
+    .option-item:hover { border-color: rgba(201,168,76,0.25); background: rgba(201,168,76,0.03); }
+    .option-item.sel-green { border-color: rgba(74,222,128,0.4); background: rgba(74,222,128,0.06); }
+    .option-item.sel-amber { border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.06); }
+    .option-item.sel-red { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.06); }
+    .option-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .sel-green .option-radio { border-color: #4ade80; background: #4ade80; }
+    .sel-amber .option-radio { border-color: #fbbf24; background: #fbbf24; }
+    .sel-red .option-radio { border-color: #ef4444; background: #ef4444; }
+    .option-radio::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #0a1628; display: none; }
+    .option-item[class*="sel-"] .option-radio::after { display: block; }
+    .option-content { flex: 1; }
+    .option-label { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+    .option-label .indicator { font-size: 14px; }
+    .option-label strong { font-size: 14px; font-weight: 700; color: #ffffff; }
+    .option-label .points { font-size: 11px; color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px; margin-left: 6px; }
+    .option-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+
+    .helper-text { background: rgba(255,255,255,0.02); border-left: 3px solid rgba(201,168,76,0.4); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; }
+    .helper-text p { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.6; font-style: italic; }
+
+    .expandable { margin-top: 14px; }
+    .expandable-trigger { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 14px; background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.15); border-radius: 8px; transition: all 0.2s; }
+    .expandable-trigger:hover { background: rgba(201,168,76,0.1); }
+    .expandable-trigger span { font-size: 13px; font-weight: 600; color: #C9A84C; }
+    .expandable-trigger .arrow { font-size: 10px; color: #C9A84C; transition: transform 0.3s; }
+    .expandable-trigger.open .arrow { transform: rotate(180deg); }
+    .expandable-content { display: none; margin-top: 10px; padding: 16px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); }
+    .expandable-content.show { display: block; }
+    .expandable-content ul { list-style: none; padding: 0; }
+    .expandable-content li { font-size: 13px; color: rgba(255,255,255,0.6); padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .expandable-content li:last-child { border-bottom: none; }
+    .expandable-content li strong { color: #C9A84C; }
+
+    /* RENT INPUTS */
+    .input-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+    .input-row { display: flex; align-items: center; gap: 12px; }
+    .input-row label { font-size: 13px; color: rgba(255,255,255,0.6); flex: 1; }
+    .input-row .prefix { font-size: 14px; color: #C9A84C; font-weight: 700; }
+    .input-row input { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 14px; color: #ffffff; font-size: 14px; font-weight: 600; width: 110px; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .input-row input:focus { outline: none; border-color: #C9A84C; box-shadow: 0 0 0 2px rgba(201,168,76,0.15); }
+
+    .rent-viability { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; transition: all 0.3s; }
+    .rent-viability.green { background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.2); }
+    .rent-viability.amber { background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2); }
+    .rent-viability.red { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); }
+    .rv-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .green .rv-dot { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,0.4); }
+    .amber .rv-dot { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,0.4); }
+    .red .rv-dot { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.4); }
+    .rv-text { font-size: 13px; font-weight: 600; }
+    .green .rv-text { color: #4ade80; }
+    .amber .rv-text { color: #fbbf24; }
+    .red .rv-text { color: #ef4444; }
+    .rv-detail { font-size: 12px; color: rgba(255,255,255,0.4); margin-left: auto; }
+
+    /* COMPARISON TABLE */
+    .comparison-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .comparison-table th { text-align: left; font-size: 12px; font-weight: 700; color: #C9A84C; padding: 8px 12px; border-bottom: 1px solid rgba(201,168,76,0.2); text-transform: uppercase; letter-spacing: 0.05em; }
+    .comparison-table td { font-size: 13px; color: rgba(255,255,255,0.6); padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+
+    /* CONTEXT SECTIONS */
+    .context-section { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 24px; margin-bottom: 24px; }
+    .context-section .section-label { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.05); padding: 3px 10px; border-radius: 4px; margin-bottom: 14px; }
+    .context-section h4 { font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+    .context-section .context-subtitle { font-size: 13px; color: rgba(255,255,255,0.5); font-style: italic; margin-bottom: 16px; }
+    .context-note { background: rgba(201,168,76,0.05); border: 1px solid rgba(201,168,76,0.12); border-radius: 8px; padding: 12px 16px; margin-top: 16px; }
+    .context-note p { font-size: 12px; color: rgba(255,255,255,0.5); font-style: italic; line-height: 1.6; }
+
+    .traffic-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+    .traffic-item:hover { border-color: rgba(201,168,76,0.2); }
+    .traffic-item.selected { border-color: rgba(201,168,76,0.3); background: rgba(201,168,76,0.04); }
+    .traffic-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .traffic-dot.green { background: #4ade80; }
+    .traffic-dot.amber { background: #fbbf24; }
+    .traffic-dot.red { background: #ef4444; }
+    .traffic-item span { font-size: 13px; color: rgba(255,255,255,0.7); }
+    .traffic-item.selected span { color: #ffffff; }
+
+    .free-text { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 14px 16px; color: rgba(255,255,255,0.7); font-size: 13px; font-family: 'DM Sans', sans-serif; min-height: 80px; resize: vertical; margin-top: 12px; }
+    .free-text:focus { outline: none; border-color: #C9A84C; }
+    .free-text::placeholder { color: rgba(255,255,255,0.25); }
+
+    .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent); margin: 36px 0; }
+
+    /* STICKY SCORE BAR */
+    .score-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(6,15,29,0.97); border-top: 1px solid rgba(201,168,76,0.2); padding: 14px 20px; display: flex; align-items: center; justify-content: center; gap: 20px; z-index: 200; backdrop-filter: blur(12px); }
+    .score-display { display: flex; align-items: center; gap: 12px; }
+    .score-number { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 800; color: #C9A84C; transition: all 0.3s; }
+    .score-meta .score-lbl { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .score-meta .score-of { font-size: 13px; color: rgba(255,255,255,0.4); }
+    .score-categories { display: flex; gap: 8px; }
+    .score-cat-dot { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.3); transition: all 0.3s; }
+    .score-cat-dot.green { background: rgba(74,222,128,0.15); color: #4ade80; }
+    .score-cat-dot.amber { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .score-cat-dot.red { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .score-verdict-pill { padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s; }
+    .score-verdict-pill.green { background: rgba(74,222,128,0.12); color: #4ade80; }
+    .score-verdict-pill.amber { background: rgba(251,191,36,0.12); color: #fbbf24; }
+    .score-verdict-pill.red { background: rgba(239,68,68,0.12); color: #ef4444; }
+    .score-verdict-pill.empty { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.3); }
+
+    /* RESULTS */
+    .results-section { margin-top: 36px; padding: 32px; border-radius: 16px; text-align: center; display: none; }
+    .results-section.show { display: block; }
+    .results-section.green { background: rgba(74,222,128,0.06); border: 2px solid rgba(74,222,128,0.3); }
+    .results-section.amber { background: rgba(251,191,36,0.06); border: 2px solid rgba(251,191,36,0.3); }
+    .results-section.red { background: rgba(239,68,68,0.06); border: 2px solid rgba(239,68,68,0.3); }
+    .result-icon { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+    .results-section.green .result-icon { background: rgba(74,222,128,0.15); }
+    .results-section.amber .result-icon { background: rgba(251,191,36,0.15); }
+    .results-section.red .result-icon { background: rgba(239,68,68,0.15); }
+    .results-section h3 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+    .results-section.green h3 { color: #4ade80; }
+    .results-section.amber h3 { color: #fbbf24; }
+    .results-section.red h3 { color: #ef4444; }
+    .result-text { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.7; max-width: 500px; margin: 0 auto 20px; }
+
+    /* SCORE BREAKDOWN */
+    .score-breakdown { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; text-align: left; }
+    .breakdown-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: 8px; }
+    .breakdown-row .br-label { flex: 1; font-size: 13px; color: rgba(255,255,255,0.6); }
+    .breakdown-row .br-score { font-size: 13px; font-weight: 700; }
+    .br-score.green { color: #4ade80; }
+    .br-score.amber { color: #fbbf24; }
+    .br-score.red { color: #ef4444; }
+    .br-score.empty { color: rgba(255,255,255,0.3); }
+
+    .reset-btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.12); transition: all 0.2s; margin-top: 8px; }
+    .reset-btn:hover { background: rgba(255,255,255,0.12); }
+
+    @media (max-width: 768px) {
+      .page-header { padding: 10px 12px; }
+      .nav-pills { display: none; }
+      .content-area { padding: 20px 14px 130px; }
+      .page-title h1 { font-size: 22px; }
+      .category-card { padding: 18px 14px; }
+      .category-title h3 { font-size: 17px; }
+      .option-item { padding: 12px; gap: 10px; }
+      .input-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .input-row input { width: 100%; }
+      .score-bar { padding: 10px 12px; gap: 12px; }
+      .score-number { font-size: 24px; }
+      .score-categories { display: none; }
+      .pt-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="logo">The HMO Blueprint <span>| Tools</span></div>
+    <div class="nav-pills">
+      <div class="nav-pill active">Scorecard</div>
+      <div class="nav-pill">Action Plan</div>
+      <div class="nav-pill">Checklist</div>
+      <div class="nav-pill">Checker</div>
+      <div class="nav-pill">Roadmap</div>
+    </div>
+  </header>
+
+  <div class="content-area">
+
+    <div class="page-title">
+      <div class="badge">Included In Your Bundle</div>
+      <h1>HMO Market Viability Scorecard</h1>
+      <p>Score any target area in under 5 minutes. Get a clear green light, amber or red recommendation before you commit.</p>
+    </div>
+
+    <!-- PROGRESS TRACKER -->
+    <div class="progress-tracker" id="progressTracker">
+      <div class="pt-step active" id="pt1">
+        <div class="pt-dot">1</div>
+        <div class="pt-label">Demand</div>
+      </div>
+      <div class="pt-step" id="pt2">
+        <div class="pt-dot">2</div>
+        <div class="pt-label">Tenants</div>
+      </div>
+      <div class="pt-step" id="pt3">
+        <div class="pt-dot">3</div>
+        <div class="pt-label">Transport</div>
+      </div>
+      <div class="pt-step" id="pt4">
+        <div class="pt-dot">4</div>
+        <div class="pt-label">Rents</div>
+      </div>
+      <div class="pt-step" id="pt5">
+        <div class="pt-dot">5</div>
+        <div class="pt-label">Article 4</div>
+      </div>
+      <div class="pt-step" id="pt6">
+        <div class="pt-dot">6</div>
+        <div class="pt-label">Licensing</div>
+      </div>
+    </div>
+
+    <div class="intro-block">
+      <p>"Work through each category below. Select the answer that best describes your target area. Your score updates in real time at the bottom. Complete all 6 categories to get your final recommendation."</p>
+    </div>
+
+    <!-- ===== CATEGORY 1 — DEMAND DRIVERS ===== -->
+    <div class="category-card" id="card1">
+      <div class="category-header">
+        <div class="category-number">1</div>
+        <div class="category-title">
+          <h3>Demand Drivers</h3>
+          <p class="subtitle">Is there a strong, sustainable reason for people to rent rooms in this area?</p>
+        </div>
+      </div>
+      <div class="options-group" data-category="1" data-max="2">
+        <div class="option-item" data-value="2" data-color="green" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟢</span><strong>Strong</strong><span class="points">2 points</span></div>
+            <p class="option-desc">Two or more demand drivers present — large employers, universities, hospitals, town centre, regeneration projects</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="1" data-color="amber" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟡</span><strong>Moderate</strong><span class="points">1 point</span></div>
+            <p class="option-desc">One clear demand driver present but limited diversity</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="0" data-color="red" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🔴</span><strong>Weak</strong><span class="points">0 points</span></div>
+            <p class="option-desc">No clear identifiable demand driver in the target area</p>
+          </div>
+        </div>
+      </div>
+      <div class="helper-text">
+        <p>"What to look for: major employers, business parks, hospitals/NHS trusts, universities, large regeneration projects, enterprise zones. The more demand drivers — and the more diverse — the stronger the market."</p>
+      </div>
+    </div>
+
+    <!-- ===== CATEGORY 2 — TENANT DEMOGRAPHICS ===== -->
+    <div class="category-card" id="card2">
+      <div class="category-header">
+        <div class="category-number">2</div>
+        <div class="category-title">
+          <h3>Tenant Demographics</h3>
+          <p class="subtitle">Is there more than one type of tenant who would rent rooms here?</p>
+        </div>
+      </div>
+      <div class="options-group" data-category="2" data-max="2">
+        <div class="option-item" data-value="2" data-color="green" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟢</span><strong>Strong</strong><span class="points">2 points</span></div>
+            <p class="option-desc">Two or more viable tenant demographics — e.g. young professionals AND students, or healthcare workers AND DSS tenants</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="1" data-color="amber" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟡</span><strong>Moderate</strong><span class="points">1 point</span></div>
+            <p class="option-desc">One clear demographic but no obvious fallback if that demand changes</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="0" data-color="red" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🔴</span><strong>Weak</strong><span class="points">0 points</span></div>
+            <p class="option-desc">No clear tenant demographic identified</p>
+          </div>
+        </div>
+      </div>
+      <div class="helper-text">
+        <p>"The key is diversity. If one demographic dries up — a university closes, a major employer leaves — you need a fallback. Aim for at least two viable tenant types in your target area."</p>
+      </div>
+      <div class="expandable">
+        <div class="expandable-trigger" onclick="toggleExpand(this)">
+          <span class="arrow">▼</span>
+          <span>Which demographics should I look for?</span>
+        </div>
+        <div class="expandable-content">
+          <ul>
+            <li><strong>Young Professionals</strong> — Age 22-35, working locally, commuter routes to city centres</li>
+            <li><strong>Students</strong> — University within 1-2 miles, 5,000+ student population</li>
+            <li><strong>Healthcare Workers</strong> — NHS trust, hospital or large care network within 2 miles</li>
+            <li><strong>DSS / Housing Benefit</strong> — Check Local Housing Allowance rates for the area</li>
+            <li><strong>Construction / Contract Workers</strong> — Major infrastructure or regeneration projects nearby</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CATEGORY 3 — TRANSPORT ===== -->
+    <div class="category-card" id="card3">
+      <div class="category-header">
+        <div class="category-number">3</div>
+        <div class="category-title">
+          <h3>Transport & Connectivity</h3>
+          <p class="subtitle">Can tenants get to work without a car?</p>
+        </div>
+      </div>
+      <div class="options-group" data-category="3" data-max="2">
+        <div class="option-item" data-value="2" data-color="green" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟢</span><strong>Strong</strong><span class="points">2 points</span></div>
+            <p class="option-desc">Train station within 1 mile AND frequent bus routes AND walkable town centre access</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="1" data-color="amber" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟡</span><strong>Moderate</strong><span class="points">1 point</span></div>
+            <p class="option-desc">One good transport link — train OR frequent buses, but not both</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="0" data-color="red" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🔴</span><strong>Weak</strong><span class="points">0 points</span></div>
+            <p class="option-desc">Car dependent — limited or no public transport options</p>
+          </div>
+        </div>
+      </div>
+      <div class="helper-text">
+        <p>"Most HMO tenants don't own cars or prefer not to use them. Strong transport links directly increase your achievable room rents and reduce void periods. Use Walk Score and Google Maps to assess any area."</p>
+      </div>
+    </div>
+
+    <!-- ===== CATEGORY 4 — ROOM RENTS ===== -->
+    <div class="category-card" id="card4">
+      <div class="category-header">
+        <div class="category-number">4</div>
+        <div class="category-title">
+          <h3>Room Rent Analysis</h3>
+          <p class="subtitle">What can you actually charge — and does the market support profitable HMO rents?</p>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <label>Lowest room rent found on Spareroom:</label>
+          <span class="prefix">£</span>
+          <input type="number" id="rentLow" placeholder="e.g. 400" oninput="calcRentScore()">
+        </div>
+        <div class="input-row">
+          <label>Highest room rent found on Spareroom:</label>
+          <span class="prefix">£</span>
+          <input type="number" id="rentHigh" placeholder="e.g. 650" oninput="calcRentScore()">
+        </div>
+        <div class="input-row">
+          <label>Average room rent (your estimate):</label>
+          <span class="prefix">£</span>
+          <input type="number" id="rentAvg" placeholder="e.g. 500" oninput="calcRentScore()">
+        </div>
+      </div>
+
+      <div class="rent-viability" id="rentViability" style="display:none;">
+        <div class="rv-dot"></div>
+        <span class="rv-text" id="rvText"></span>
+        <span class="rv-detail" id="rvDetail"></span>
+      </div>
+
+      <p style="font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 10px;">How quickly are rooms being filled?</p>
+      <div class="options-group" data-category="4b" data-max="0">
+        <div class="option-item" data-value="0" data-color="green" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟢</span><strong>Rooms filling quickly</strong></div>
+            <p class="option-desc">Listed less than 7 days</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="0" data-color="amber" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟡</span><strong>Moderate</strong></div>
+            <p class="option-desc">Some rooms sitting for 2-4 weeks</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="0" data-color="red" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🔴</span><strong>High supply</strong></div>
+            <p class="option-desc">Rooms sitting empty for months</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="helper-text">
+        <p>"Search Spareroom.co.uk for your target postcode. Filter by rooms only. Note the lowest, highest and most common prices. Check listing dates to gauge how quickly rooms are being filled."</p>
+      </div>
+      <div class="expandable">
+        <div class="expandable-trigger" onclick="toggleExpand(this)">
+          <span class="arrow">▼</span>
+          <span>What drives higher room rents?</span>
+        </div>
+        <div class="expandable-content">
+          <table class="comparison-table">
+            <thead><tr><th>Factor</th><th>Lower Rent</th><th>Higher Rent</th></tr></thead>
+            <tbody>
+              <tr><td>Room size</td><td>Under 10sqm</td><td>12sqm+</td></tr>
+              <tr><td>Bathroom</td><td>Shared</td><td>En-suite</td></tr>
+              <tr><td>Finish</td><td>Basic</td><td>Premium</td></tr>
+              <tr><td>Bills</td><td>Extra</td><td>Included</td></tr>
+              <tr><td>Location</td><td>Edge of town</td><td>Town centre</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- ===== CATEGORY 5 — ARTICLE 4 ===== -->
+    <div class="category-card" id="card5">
+      <div class="category-header">
+        <div class="category-number">5</div>
+        <div class="category-title">
+          <h3>Article 4 Directions</h3>
+          <p class="subtitle">Does your target area require planning permission to convert to an HMO?</p>
+        </div>
+      </div>
+      <div class="options-group" data-category="5" data-max="2">
+        <div class="option-item" data-value="2" data-color="green" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟢</span><strong>No Article 4</strong><span class="points">2 points</span></div>
+            <p class="option-desc">Area has no Article 4 direction — permitted development rights apply, no planning permission needed for C3 to C4 conversion</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="1" data-color="amber" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟡</span><strong>Article 4 — High approval rate</strong><span class="points">1 point</span></div>
+            <p class="option-desc">Article 4 applies but council has a track record of approving HMO applications in the area</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="0" data-color="red" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🔴</span><strong>Article 4 — Restrictive</strong><span class="points">0 points</span></div>
+            <p class="option-desc">Article 4 applies and council is known to refuse or heavily restrict HMO planning applications</p>
+          </div>
+        </div>
+      </div>
+      <div class="helper-text">
+        <p>"Check your local council's planning portal. Search 'Article 4 HMO [your area]'. If Article 4 applies, look at recent planning decisions to gauge approval rates before committing."</p>
+      </div>
+      <div class="expandable">
+        <div class="expandable-trigger" onclick="toggleExpand(this)">
+          <span class="arrow">▼</span>
+          <span>How to check Article 4 in any area</span>
+        </div>
+        <div class="expandable-content">
+          <ul>
+            <li><strong>Step 1</strong> — Google "[council name] Article 4 HMO direction"</li>
+            <li><strong>Step 2</strong> — Check your local council's planning policy documents</li>
+            <li><strong>Step 3</strong> — Search the planning portal for recent HMO applications nearby</li>
+            <li><strong>Step 4</strong> — Look at the decision notices — approved or refused?</li>
+            <li><strong>Step 5</strong> — Call the planning department — they're usually helpful with pre-application queries</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CATEGORY 6 — LICENSING ===== -->
+    <div class="category-card" id="card6">
+      <div class="category-header">
+        <div class="category-number">6</div>
+        <div class="category-title">
+          <h3>Licensing Requirements</h3>
+          <p class="subtitle">What licensing applies — and is it manageable?</p>
+        </div>
+      </div>
+      <div class="options-group" data-category="6" data-max="2">
+        <div class="option-item" data-value="2" data-color="green" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟢</span><strong>Mandatory licence only</strong><span class="points">2 points</span></div>
+            <p class="option-desc">Only mandatory HMO licensing applies (5+ occupants, 3+ storeys). Straightforward requirements, clear process</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="1" data-color="amber" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🟡</span><strong>Additional licensing — manageable</strong><span class="points">1 point</span></div>
+            <p class="option-desc">Additional or selective licensing applies but requirements are clear and achievable</p>
+          </div>
+        </div>
+        <div class="option-item" data-value="0" data-color="red" onclick="selectOption(this)">
+          <div class="option-radio"></div>
+          <div class="option-content">
+            <div class="option-label"><span class="indicator">🔴</span><strong>Complex or restrictive licensing</strong><span class="points">0 points</span></div>
+            <p class="option-desc">Heavy additional licensing requirements, very high fees, or conditions that significantly impact profitability</p>
+          </div>
+        </div>
+      </div>
+      <div class="helper-text">
+        <p>"Search '[council name] HMO licensing' to find what applies. All HMOs with 5+ tenants need mandatory licensing nationally. Many councils add additional or selective licensing — check fees and conditions carefully."</p>
+      </div>
+      <div class="expandable">
+        <div class="expandable-trigger" onclick="toggleExpand(this)">
+          <span class="arrow">▼</span>
+          <span>Types of HMO licensing explained</span>
+        </div>
+        <div class="expandable-content">
+          <ul>
+            <li><strong>Mandatory Licensing</strong> — Applies nationally. 5+ tenants, 3+ storeys. Non-negotiable.</li>
+            <li><strong>Additional Licensing</strong> — Council-specific. Can extend to smaller HMOs (e.g. 3+ tenants). Check your council.</li>
+            <li><strong>Selective Licensing</strong> — Applies to ALL rental properties in designated areas, not just HMOs.</li>
+            <li><strong>Fees</strong> — Typically £500-£1,500 per licence. Factor into your yield calculations.</li>
+            <li><strong>Conditions</strong> — Room sizes, fire safety, communal space requirements. Check before you buy.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- CONTEXT CHECKS (not scored) -->
+    <div class="context-section">
+      <span class="section-label">Context Check — Not Scored</span>
+      <h4>Supply & Demand Check</h4>
+      <p class="context-subtitle">Important context — doesn't affect your score but helps validate your findings.</p>
+      <p style="font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 10px;">How many rooms currently listed on Spareroom in your area?</p>
+      <div class="traffic-item" onclick="toggleTraffic(this)"><div class="traffic-dot green"></div><span>Under 10 rooms = Low supply</span></div>
+      <div class="traffic-item" onclick="toggleTraffic(this)"><div class="traffic-dot amber"></div><span>10–25 rooms = Moderate supply</span></div>
+      <div class="traffic-item" onclick="toggleTraffic(this)"><div class="traffic-dot red"></div><span>25+ rooms = High supply</span></div>
+      <div class="context-note"><p>"This section doesn't affect your score but is important context. A high-scoring market with too much supply can still produce void periods. Use this as a sense check."</p></div>
+    </div>
+
+    <div class="context-section">
+      <span class="section-label">Context Check — Not Scored</span>
+      <h4>Comparable HMO Check</h4>
+      <p class="context-subtitle">Are there existing HMOs operating in your target area?</p>
+      <div class="traffic-item" onclick="toggleTraffic(this)"><div class="traffic-dot green"></div><span>Yes, several — proven demand</span></div>
+      <div class="traffic-item" onclick="toggleTraffic(this)"><div class="traffic-dot amber"></div><span>A few — emerging market</span></div>
+      <div class="traffic-item" onclick="toggleTraffic(this)"><div class="traffic-dot red"></div><span>None — unknown demand</span></div>
+      <p style="font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); margin: 18px 0 8px;">What do comparable HMOs look like? (your notes)</p>
+      <textarea class="free-text" placeholder="e.g. Mostly 4-5 bed basic HMOs. Few premium options. Opportunity to stand out with en-suites..."></textarea>
+      <div class="context-note"><p>"Existing HMOs prove demand exists. No HMOs at all could mean an untapped opportunity — or no demand. Research carefully before committing."</p></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-section" id="resultsSection">
+      <div class="result-icon" id="resultIcon"></div>
+      <h3 id="resultTitle"></h3>
+      <p class="result-text" id="resultText"></p>
+      <div class="score-breakdown" id="scoreBreakdown"></div>
+      <button class="reset-btn" onclick="resetScorecard()">Start Again with a New Area</button>
+    </div>
+
+  </div>
+
+  <!-- STICKY SCORE BAR -->
+  <div class="score-bar">
+    <div class="score-display">
+      <div class="score-number" id="scoreNumber">0</div>
+      <div class="score-meta">
+        <div class="score-lbl">Your Score</div>
+        <div class="score-of">out of 12</div>
+      </div>
+    </div>
+    <div class="score-categories">
+      <div class="score-cat-dot" id="cat1">C1</div>
+      <div class="score-cat-dot" id="cat2">C2</div>
+      <div class="score-cat-dot" id="cat3">C3</div>
+      <div class="score-cat-dot" id="cat4">C4</div>
+      <div class="score-cat-dot" id="cat5">C5</div>
+      <div class="score-cat-dot" id="cat6">C6</div>
+    </div>
+    <div class="score-verdict-pill empty" id="verdictPill">Incomplete</div>
+  </div>
+
+  <script>
+    // State
+    const scores = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null };
+    const colors = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null };
+    const labels = {
+      1: 'Demand Drivers', 2: 'Tenant Demographics', 3: 'Transport & Connectivity',
+      4: 'Room Rent Analysis', 5: 'Article 4 Directions', 6: 'Licensing Requirements'
+    };
+
+    function selectOption(el) {
+      const group = el.closest('.options-group');
+      const cat = group.dataset.category;
+
+      // Deselect all in group
+      group.querySelectorAll('.option-item').forEach(item => {
+        item.classList.remove('sel-green', 'sel-amber', 'sel-red');
+      });
+
+      // Select this one
+      const color = el.dataset.color;
+      el.classList.add('sel-' + color);
+
+      // Only update score for scored categories (1-6, not 4b)
+      if (cat && cat !== '4b') {
+        const catNum = parseInt(cat);
+        scores[catNum] = parseInt(el.dataset.value);
+        colors[catNum] = color;
+        updateUI(catNum);
+      }
+    }
+
+    function calcRentScore() {
+      const avg = parseFloat(document.getElementById('rentAvg').value) || 0;
+      const low = parseFloat(document.getElementById('rentLow').value) || 0;
+      const high = parseFloat(document.getElementById('rentHigh').value) || 0;
+
+      if (!avg && !low && !high) {
+        document.getElementById('rentViability').style.display = 'none';
+        scores[4] = null; colors[4] = null;
+        updateUI(4); return;
+      }
+
+      const ref = avg || ((low + high) / 2);
+      let score, color, text, detail;
+
+      if (ref >= 550) {
+        score = 2; color = 'green'; text = 'Rent Viability: Strong (2 points)';
+        detail = '£' + Math.round(ref) + '+ average';
+      } else if (ref >= 450) {
+        score = 1; color = 'amber'; text = 'Rent Viability: Moderate (1 point)';
+        detail = '£' + Math.round(ref) + ' average';
+      } else {
+        score = 0; color = 'red'; text = 'Rent Viability: Weak (0 points)';
+        detail = '£' + Math.round(ref) + ' average — below threshold';
+      }
+
+      const rv = document.getElementById('rentViability');
+      rv.className = 'rent-viability ' + color;
+      rv.style.display = 'flex';
+      document.getElementById('rvText').textContent = text;
+      document.getElementById('rvDetail').textContent = detail;
+
+      scores[4] = score; colors[4] = color;
+      updateUI(4);
+    }
+
+    function updateUI(catNum) {
+      // Update category number badge
+      const card = document.getElementById('card' + catNum);
+      const num = card.querySelector('.category-number');
+      if (scores[catNum] !== null) {
+        card.classList.add('answered');
+        num.textContent = scores[catNum] === 2 ? '✓' : scores[catNum] === 1 ? '~' : '✗';
+      }
+
+      // Update progress tracker
+      for (let i = 1; i <= 6; i++) {
+        const pt = document.getElementById('pt' + i);
+        pt.classList.remove('active', 'done');
+        if (scores[i] !== null) {
+          pt.classList.add('done');
+          pt.querySelector('.pt-dot').textContent = scores[i] === 2 ? '✓' : scores[i] === 1 ? '~' : '✗';
+        }
+      }
+      // Set next unanswered as active
+      for (let i = 1; i <= 6; i++) {
+        if (scores[i] === null) { document.getElementById('pt' + i).classList.add('active'); break; }
+      }
+
+      // Update cat dots in score bar
+      for (let i = 1; i <= 6; i++) {
+        const dot = document.getElementById('cat' + i);
+        dot.className = 'score-cat-dot';
+        if (colors[i]) dot.classList.add(colors[i]);
+      }
+
+      // Calculate total
+      let total = 0;
+      let answered = 0;
+      for (let i = 1; i <= 6; i++) {
+        if (scores[i] !== null) { total += scores[i]; answered++; }
+      }
+
+      document.getElementById('scoreNumber').textContent = total;
+
+      const pill = document.getElementById('verdictPill');
+      if (answered < 6) {
+        pill.className = 'score-verdict-pill empty';
+        pill.textContent = answered + '/6 complete';
+      } else {
+        showResults(total);
+      }
+    }
+
+    function showResults(total) {
+      const pill = document.getElementById('verdictPill');
+      const rs = document.getElementById('resultsSection');
+      let verdict, icon, title, text, cls;
+
+      if (total >= 9) {
+        verdict = 'Green Light'; cls = 'green'; icon = '✅';
+        title = 'Green Light — Strong Market';
+        text = 'Your target area shows strong fundamentals for HMO investment. Multiple demand drivers, good transport, viable rents and manageable regulation. Proceed with confidence to the deal-finding stage.';
+      } else if (total >= 6) {
+        verdict = 'Amber — Proceed with Caution'; cls = 'amber'; icon = '⚠️';
+        title = 'Amber — Proceed with Caution';
+        text = 'Your target area has some positive signals but also some gaps. Review the weaker categories carefully before committing. Consider whether the risks can be mitigated before moving forward.';
+      } else {
+        verdict = 'Red — Not Viable'; cls = 'red'; icon = '🔴';
+        title = 'Red — Not Viable at This Time';
+        text = 'Your target area is showing significant weaknesses. We recommend choosing a different target area. Review the low-scoring categories to understand exactly what's holding this market back.';
+      }
+
+      pill.className = 'score-verdict-pill ' + cls;
+      pill.textContent = verdict;
+
+      rs.className = 'results-section show ' + cls;
+      document.getElementById('resultIcon').textContent = icon;
+      document.getElementById('resultTitle').textContent = title;
+      document.getElementById('resultText').textContent = text;
+
+      // Score breakdown
+      let breakdown = '';
+      for (let i = 1; i <= 6; i++) {
+        const s = scores[i];
+        const c = s === 2 ? 'green' : s === 1 ? 'amber' : 'red';
+        const badge = s === 2 ? '🟢 Strong (2/2)' : s === 1 ? '🟡 Moderate (1/2)' : '🔴 Weak (0/2)';
+        breakdown += `<div class="breakdown-row"><span class="br-label">${labels[i]}</span><span class="br-score ${c}">${badge}</span></div>`;
+      }
+      document.getElementById('scoreBreakdown').innerHTML = breakdown;
+
+      rs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetScorecard() {
+      for (let i = 1; i <= 6; i++) { scores[i] = null; colors[i] = null; }
+
+      document.querySelectorAll('.option-item').forEach(el => {
+        el.classList.remove('sel-green', 'sel-amber', 'sel-red');
+      });
+      document.querySelectorAll('.category-card').forEach(el => {
+        el.classList.remove('answered');
+      });
+      document.querySelectorAll('.category-number').forEach((el, i) => {
+        el.textContent = i + 1;
+      });
+      document.querySelectorAll('.pt-step').forEach((el, i) => {
+        el.classList.remove('done', 'active');
+        el.querySelector('.pt-dot').textContent = i + 1;
+        if (i === 0) el.classList.add('active');
+      });
+      document.querySelectorAll('.score-cat-dot').forEach(el => {
+        el.className = 'score-cat-dot';
+      });
+      document.getElementById('scoreNumber').textContent = '0';
+      document.getElementById('verdictPill').className = 'score-verdict-pill empty';
+      document.getElementById('verdictPill').textContent = 'Incomplete';
+      document.getElementById('resultsSection').className = 'results-section';
+      document.getElementById('rentViability').style.display = 'none';
+      document.getElementById('rentLow').value = '';
+      document.getElementById('rentHigh').value = '';
+      document.getElementById('rentAvg').value = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleExpand(trigger) {
+      trigger.classList.toggle('open');
+      trigger.nextElementSibling.classList.toggle('show');
+    }
+
+    function toggleTraffic(el) {
+      const siblings = el.parentElement.querySelectorAll('.traffic-item');
+      siblings.forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+  </script>
+
+</body>
+</html>
