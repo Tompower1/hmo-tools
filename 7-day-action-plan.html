@@ -173,11 +173,18 @@
     }
 
     @media print {
-      body { background: #ffffff; color: #000000; }
-      .page-header, .pdf-section, .complete-day-btn, .add-row-btn { display: none !important; }
-      .day-card { border: 1px solid #ccc; break-inside: avoid; }
+      * { color: #111111 !important; background: #ffffff !important; border-color: #cccccc !important; box-shadow: none !important; }
+      .page-header, .pdf-section, .complete-day-btn, .add-row-btn, .progress-tracker, input[type=range] { display: none !important; }
+      .day-card { border: 1px solid #cccccc !important; break-inside: avoid; margin-bottom: 12px; }
       .day-content { display: block !important; }
-      .form-input, .table-input, .form-select { background: #f9f9f9; color: #000; border: 1px solid #ddd; }
+      .day-header { background: #f5f5f5 !important; }
+      .day-number { background: #eeeeee !important; }
+      .form-input, .table-input, .form-select, .form-textarea { background: #f9f9f9 !important; color: #111111 !important; border: 1px solid #cccccc !important; }
+      .check-box { border: 2px solid #333333 !important; background: #ffffff !important; }
+      .check-item.checked .check-box { background: #333333 !important; }
+      .check-item.checked .check-box::after { border-color: #ffffff !important; }
+      .data-table th { background: #eeeeee !important; }
+      .script-box, .intro-block, .goal-badge, .next-steps, .ns-card { background: #f9f9f9 !important; border: 1px solid #cccccc !important; }
     }
   </style>
 </head>
