@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Is This Worth a Viewing? | The HMO Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html,body{font-family:'DM Sans',sans-serif;background:#0a1628;color:#fff;min-height:100vh;overflow-x:hidden;width:100%;max-width:100vw;}
+
+    .page-header{background:#060f1d;border-bottom:1px solid rgba(201,168,76,.15);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#C9A84C;}
+    .logo span{color:#fff;font-weight:400;font-size:14px;margin-left:8px;}
+    .nav-pills{display:flex;gap:6px;}
+    .nav-pill{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;color:rgba(255,255,255,.5);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);white-space:nowrap;}
+    .nav-pill.active{background:rgba(201,168,76,.15);color:#C9A84C;border-color:rgba(201,168,76,.3);}
+
+    .content-area{max-width:820px;margin:0 auto;padding:40px 20px 80px;width:100%;}
+
+    .page-title{text-align:center;margin-bottom:32px;}
+    .page-title .badge{display:inline-block;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9A84C;margin-bottom:14px;}
+    .page-title h1{font-family:'Playfair Display',serif;font-size:32px;font-weight:800;line-height:1.2;margin-bottom:10px;}
+    .page-title p{font-size:15px;color:rgba(255,255,255,.55);line-height:1.6;max-width:600px;margin:0 auto;}
+
+    /* PART TABS */
+    .part-tabs{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;}
+    .part-tab{flex:1;min-width:140px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);cursor:pointer;text-align:center;transition:all .2s;}
+    .part-tab:hover{border-color:rgba(201,168,76,.2);}
+    .part-tab.active{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.08);}
+    .part-tab .pt-num{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px;}
+    .part-tab.active .pt-num{color:#C9A84C;}
+    .part-tab .pt-label{font-size:13px;font-weight:600;color:rgba(255,255,255,.6);}
+    .part-tab.active .pt-label{color:#fff;}
+    .part-tab .pt-progress{font-size:10px;color:rgba(255,255,255,.3);margin-top:4px;}
+    .part-tab.active .pt-progress{color:rgba(201,168,76,.7);}
+
+    .part-content{display:none;}
+    .part-content.active{display:block;}
+
+    /* SECTION CARDS */
+    .section-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;margin-bottom:16px;overflow:hidden;transition:border-color .3s;}
+    .section-card.open{border-color:rgba(201,168,76,.25);}
+    .sec-header{display:flex;align-items:center;gap:14px;padding:18px 24px;cursor:pointer;}
+    .sec-header:hover{background:rgba(255,255,255,.02);}
+    .sec-icon{width:44px;height:44px;border-radius:12px;background:rgba(201,168,76,.12);color:#C9A84C;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;font-family:'Playfair Display',serif;}
+    .sec-title{flex:1;}
+    .sec-title h3{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff;}
+    .sec-title .subtitle{font-size:12px;color:rgba(255,255,255,.45);margin-top:4px;font-style:italic;}
+    .sec-expand{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-size:12px;flex-shrink:0;transition:transform .3s;}
+    .section-card.open .sec-expand{transform:rotate(180deg);color:#C9A84C;}
+    .sec-content{display:none;padding:0 24px 24px;}
+    .section-card.open .sec-content{display:block;}
+
+    .section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),transparent);margin:20px 0;}
+
+    /* PROGRESS BAR */
+    .progress-bar-wrap{margin-bottom:16px;}
+    .progress-label{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;}
+    .progress-track{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+    .progress-fill{height:100%;background:linear-gradient(90deg,#C9A84C,#4ade80);border-radius:3px;transition:width .4s ease;width:0%;}
+
+    /* CHECKBOXES */
+    .check-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);margin-bottom:8px;cursor:pointer;transition:all .2s;}
+    .check-item:hover{border-color:rgba(201,168,76,.2);background:rgba(201,168,76,.03);}
+    .check-item.checked{border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.04);}
+    .check-box{width:20px;height:20px;border-radius:6px;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-top:1px;}
+    .check-item.checked .check-box{border-color:#4ade80;background:#4ade80;}
+    .check-box::after{content:'';display:none;width:5px;height:9px;border:2px solid #0a1628;border-top:none;border-left:none;transform:rotate(45deg) translate(-1px,-1px);}
+    .check-item.checked .check-box::after{display:block;}
+    .check-label{font-size:13px;color:rgba(255,255,255,.7);font-weight:500;line-height:1.5;}
+    .check-item.checked .check-label{color:#4ade80;}
+
+    /* FORMS */
+    .form-group{margin-bottom:16px;}
+    .form-label{font-size:13px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:8px;display:block;}
+    .form-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 16px;color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;transition:border-color .2s;}
+    .form-input:focus{outline:none;border-color:#C9A84C;}
+    .form-input::placeholder{color:rgba(255,255,255,.3);}
+    .form-textarea{min-height:70px;resize:vertical;}
+    .form-row{display:flex;gap:12px;}
+    .form-row .form-group{flex:1;}
+
+    .measure-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+    .measure-row label{font-size:12px;color:rgba(255,255,255,.5);font-weight:500;min-width:100px;}
+    .measure-input{width:80px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;font-family:'DM Sans',sans-serif;text-align:center;}
+    .measure-input:focus{outline:none;border-color:#C9A84C;}
+    .measure-x{font-size:14px;color:rgba(255,255,255,.3);font-weight:700;}
+
+    .radio-group{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+    .radio-btn{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:rgba(255,255,255,.5);transition:all .2s;}
+    .radio-btn:hover{border-color:rgba(201,168,76,.3);}
+    .radio-btn.selected{border-color:#C9A84C;background:rgba(201,168,76,.1);color:#C9A84C;}
+
+    .helper-text{background:rgba(201,168,76,.04);border-left:3px solid rgba(201,168,76,.4);padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:12px;color:rgba(255,255,255,.55);line-height:1.7;font-style:italic;}
+
+    /* DECISION BOXES */
+    .decision-box{padding:20px;border-radius:14px;margin-top:16px;margin-bottom:16px;}
+    .decision-box.green{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.25);}
+    .decision-box.red{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);}
+    .decision-box.amber{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.25);}
+    .decision-box.gold{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.25);}
+    .decision-box h4{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:8px;}
+    .decision-box.green h4{color:#4ade80;}
+    .decision-box.red h4{color:#ef4444;}
+    .decision-box.amber h4{color:#fbbf24;}
+    .decision-box.gold h4{color:#C9A84C;}
+    .decision-box p,.decision-box li{font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;}
+    .decision-box ul{padding-left:18px;margin-top:6px;}
+    .decision-box li{margin-bottom:4px;}
+
+    /* SCRIPT BOXES */
+    .script-box{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:20px;margin:16px 0;}
+    .script-box h4{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#C9A84C;margin-bottom:12px;}
+    .script-item{font-size:13px;color:rgba(255,255,255,.65);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6;}
+    .script-item:last-child{border-bottom:none;}
+
+    .warning-box{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:16px 20px;margin:16px 0;}
+    .warning-box h4{font-size:14px;font-weight:700;color:#ef4444;margin-bottom:8px;}
+    .warning-box li{font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:4px;}
+    .warning-box ul{padding-left:18px;}
+
+    /* ROOM CARDS */
+    .room-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:20px;margin-bottom:16px;}
+    .room-card h4{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .room-icon{width:28px;height:28px;border-radius:8px;background:rgba(201,168,76,.1);color:#C9A84C;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+
+    /* PHOTO GRID */
+    .photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+    .photo-group{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;}
+    .photo-group h5{font-size:12px;font-weight:700;color:#C9A84C;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;}
+
+    /* GOLDEN RULE */
+    .golden-rule{background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.03));border:2px solid rgba(201,168,76,.3);border-radius:16px;padding:28px;text-align:center;margin-top:28px;}
+    .golden-rule h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:#C9A84C;margin-bottom:12px;}
+    .golden-rule p{font-size:14px;color:rgba(255,255,255,.65);line-height:1.7;max-width:520px;margin:0 auto;}
+
+    .reminder-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+    .reminder-item{padding:14px;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);}
+    .reminder-item strong{font-size:12px;color:#C9A84C;display:block;margin-bottom:4px;}
+    .reminder-item span{font-size:11px;color:rgba(255,255,255,.5);line-height:1.5;}
+
+    /* PDF BUTTON */
+    .pdf-section{text-align:center;padding:32px 20px;margin-top:20px;border-top:1px solid rgba(201,168,76,.15);}
+    .pdf-section p{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:16px;font-style:italic;}
+    .pdf-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;background:#C9A84C;color:#0a1628;border:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
+    .pdf-btn:hover{background:#e8c96d;transform:translateY(-2px);box-shadow:0 4px 16px rgba(201,168,76,.3);}
+
+    @media(max-width:768px){
+      .page-header{padding:10px 12px;}
+      .nav-pills{display:none;}
+      .content-area{padding:20px 14px 60px;}
+      .page-title h1{font-size:22px;}
+      .part-tabs{flex-direction:column;}
+      .sec-header{padding:14px 14px;gap:10px;}
+      .sec-content{padding:0 14px 20px;}
+      .sec-icon{width:36px;height:36px;font-size:14px;}
+      .sec-title h3{font-size:16px;}
+      .form-row{flex-direction:column;gap:0;}
+      .radio-group{flex-direction:column;}
+      .radio-btn{text-align:center;}
+      .photo-grid{grid-template-columns:1fr;}
+      .reminder-grid{grid-template-columns:1fr;}
+      .measure-row{flex-direction:column;align-items:flex-start;gap:4px;}
+    }
+
+    @media print {
+      *, *::before, *::after { color: #111111 !important; background: #ffffff !important; border-color: #cccccc !important; box-shadow: none !important; }
+      .page-header, .pdf-section, .part-tabs, .sec-expand { display: none !important; }
+      .part-content { display: block !important; }
+      .section-card { border: 1px solid #999999 !important; break-inside: avoid; margin-bottom: 12px; }
+      .sec-content { display: block !important; }
+      .sec-header { background: #eeeeee !important; padding: 12px 16px !important; }
+      .sec-icon { background: #dddddd !important; color: #111111 !important; }
+      .sec-title h3, .sec-title .subtitle { color: #111111 !important; }
+      .check-item { border: 1px solid #cccccc !important; background: #ffffff !important; margin-bottom: 4px !important; }
+      .check-label, .check-item.checked .check-label { color: #111111 !important; }
+      .check-box { border: 2px solid #555555 !important; background: #ffffff !important; }
+      .check-item.checked .check-box { background: #333333 !important; border-color: #333333 !important; }
+      .check-item.checked .check-box::after { border-color: #ffffff !important; display: block !important; }
+      .form-input, .measure-input, .form-textarea { background: #f9f9f9 !important; color: #111111 !important; border: 1px solid #cccccc !important; }
+      .radio-btn { border: 1px solid #cccccc !important; color: #333333 !important; }
+      .radio-btn.selected { border: 2px solid #333333 !important; color: #111111 !important; font-weight: 700 !important; }
+      .script-box { background: #f5f5f5 !important; border: 1px solid #cccccc !important; }
+      .script-box h4 { color: #111111 !important; }
+      .script-item { color: #333333 !important; border-bottom: 1px solid #dddddd !important; }
+      .warning-box { background: #f5f5f5 !important; border: 1px solid #cccccc !important; }
+      .warning-box h4 { color: #111111 !important; }
+      .warning-box li { color: #333333 !important; }
+      .decision-box { border: 1px solid #cccccc !important; background: #f5f5f5 !important; }
+      .decision-box h4 { color: #111111 !important; }
+      .decision-box p, .decision-box li { color: #333333 !important; }
+      .room-card { border: 1px solid #cccccc !important; background: #ffffff !important; }
+      .room-card h4 { color: #111111 !important; }
+      .room-icon { background: #eeeeee !important; color: #111111 !important; }
+      .photo-group { border: 1px solid #cccccc !important; background: #f9f9f9 !important; }
+      .photo-group h5 { color: #333333 !important; }
+      .golden-rule { border: 2px solid #cccccc !important; background: #f5f5f5 !important; }
+      .golden-rule h3, .golden-rule p { color: #111111 !important; }
+      .reminder-item { border: 1px solid #cccccc !important; background: #f9f9f9 !important; }
+      .reminder-item strong { color: #333333 !important; }
+      .reminder-item span { color: #555555 !important; }
+      .progress-bar-wrap { display: none !important; }
+      .part-content::before { content: attr(data-title); display: block; font-size: 18px; font-weight: 700; color: #111111 !important; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #cccccc; }
+      .section-divider { background: #cccccc !important; }
+      .measure-row label { color: #555555 !important; }
+      .measure-x { color: #555555 !important; }
+      .page-title h1, .page-title p { color: #111111 !important; }
+      .page-title .badge { background: #eeeeee !important; color: #333333 !important; border: 1px solid #cccccc !important; }
+      .helper-text { background: #f9f9f9 !important; border-left: 3px solid #999999 !important; color: #444444 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="logo">The HMO Blueprint <span>| Tools</span></div>
+    <div class="nav-pills">
+      <div class="nav-pill">Scorecard</div>
+      <div class="nav-pill">Action Plan</div>
+      <div class="nav-pill active">Viewing Checklist</div>
+      <div class="nav-pill">Potential Checker</div>
+      <div class="nav-pill">Roadmap</div>
+    </div>
+  </header>
+
+  <div class="content-area">
+
+    <div class="page-title">
+      <div class="badge">Field Guide</div>
+      <h1>"Is This Worth a Viewing?"</h1>
+      <p>A three-part field guide from identifying a property through to making a confident post-viewing decision. Designed to use on your phone at the property.</p>
+    </div>
+
+    <!-- PART TABS -->
+    <div class="part-tabs">
+      <div class="part-tab active" data-part="1">
+        <div class="pt-num">Part 1</div>
+        <div class="pt-label">Pre-Viewing Checklist</div>
+        <div class="pt-progress" id="tab-progress-1">0% complete</div>
+      </div>
+      <div class="part-tab" data-part="2">
+        <div class="pt-num">Part 2</div>
+        <div class="pt-label">The Viewing Guide</div>
+        <div class="pt-progress" id="tab-progress-2">0% complete</div>
+      </div>
+      <div class="part-tab" data-part="3">
+        <div class="pt-num">Part 3</div>
+        <div class="pt-label">Post-Viewing Decision</div>
+        <div class="pt-progress" id="tab-progress-3">0% complete</div>
+      </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- PART 1 -->
+    <!-- ================================================================ -->
+    <div class="part-content active" id="part-1" data-title="Part 1 — Pre-Viewing Checklist">
+
+      <div class="section-card open" data-section="p1">
+        <div class="sec-header">
+          <div class="sec-icon">1</div>
+          <div class="sec-title"><h3>Market Confirmed</h3><div class="subtitle">Confirm your research before booking</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="progress-bar-wrap"><div class="progress-label"><span>Completion</span><span class="prog-pct">0 / 4</span></div><div class="progress-track"><div class="progress-fill"></div></div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have run my target area through the Market Viability Scorecard and it scored green or amber</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I know the average room rent in this postcode from my SpareRoom research</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I know what comparable 3-bed properties have sold for in this area in the last 12 months</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have identified at least 2 viable tenant demographics for this market</div></div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p1">
+        <div class="sec-header">
+          <div class="sec-icon">2</div>
+          <div class="sec-title"><h3>Property Research Completed</h3><div class="subtitle">Due diligence before you visit</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="progress-bar-wrap"><div class="progress-label"><span>Completion</span><span class="prog-pct">0 / 8</span></div><div class="progress-track"><div class="progress-fill"></div></div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have run this property through the HMO Potential Checker and it passed</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have viewed the property on Google Street View and the street looks suitable</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have checked flood risk on the Environment Agency map — low or very low risk confirmed</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have checked planning history on the local authority portal — no red flags</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have checked whether this area has an Article 4 direction in place</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have confirmed the property is freehold — or noted leasehold and understand the implications</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have confirmed the asking price is within my maximum budget</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have run a basic sense check on the Numbers Calculator and the deal could stack up</div></div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p1">
+        <div class="sec-header">
+          <div class="sec-icon">3</div>
+          <div class="sec-title"><h3>Deal Finding Completed</h3><div class="subtitle">Confirm your pipeline is solid</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="progress-bar-wrap"><div class="progress-label"><span>Completion</span><span class="prog-pct">0 / 4</span></div><div class="progress-track"><div class="progress-fill"></div></div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have contacted at least 5 agents in this area and registered my interest</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have searched Rightmove, Zoopla and Sourcery for this area</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">This property has come from my shortlist — it is not the first property I found</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have compared this property against at least 3 others on my shortlist</div></div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p1">
+        <div class="sec-header">
+          <div class="sec-icon">4</div>
+          <div class="sec-title"><h3>Viewing Preparation</h3><div class="subtitle">Get ready before you leave</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="progress-bar-wrap"><div class="progress-label"><span>Completion</span><span class="prog-pct">0 / 5</span></div><div class="progress-track"><div class="progress-fill"></div></div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have downloaded and printed the HMO Potential Checker to take with me</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have a tape measure</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">My phone is charged and has enough storage to photograph everything</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I have my questions for the agent ready</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">I know what I am looking for — extension potential, loft conversion potential, bathroom locations, room count potential</div></div>
+        </div>
+      </div>
+
+      <div class="decision-box green"><h4>&#10003; All boxes ticked — Book the viewing</h4><p>You have done the work. You are ready. Pick up the phone.</p></div>
+      <div class="decision-box red"><h4>&#10007; Boxes missing in Section 1 or 2 — Do not book yet</h4><p>Go back and complete the missing research first. A rushed viewing is a wasted viewing.</p></div>
+      <div class="decision-box amber"><h4>&#9888; Boxes missing in Section 3 — Consider whether this is your best option</h4><p>Make sure you are viewing your best shortlisted properties — not just the first ones you found.</p></div>
+      <div class="decision-box gold"><h4>&#9881; Boxes missing in Section 4 — Get prepared before you go</h4><p>Take 30 minutes to get ready. Walking in unprepared means you will miss things.</p></div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- PART 2 -->
+    <!-- ================================================================ -->
+    <div class="part-content" id="part-2" data-title="Part 2 — The Viewing Guide">
+
+      <div class="section-card open" data-section="p2">
+        <div class="sec-header">
+          <div class="sec-icon">&#128065;</div>
+          <div class="sec-title"><h3>Before You Go In</h3><div class="subtitle">On arrival — before entering the property</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Walk the street both directions — what is it like? What are neighbouring properties like?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Check the exterior — roof condition, guttering, brickwork, windows, any visible damp or damage</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Assess the garden from the street if visible — how deep does it look?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Note parking — on street, off street, permit zone?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph the exterior and street before entering</div></div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p2">
+        <div class="sec-header">
+          <div class="sec-icon">&#128172;</div>
+          <div class="sec-title"><h3>The Agent Conversation</h3><div class="subtitle">Ask these questions before starting the viewing</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="script-box">
+            <h4>About the Vendor</h4>
+            <div class="script-item">Why is the vendor selling?</div>
+            <div class="script-item">How long has it been on the market?</div>
+            <div class="script-item">Have there been any offers? Why did they fall through?</div>
+            <div class="script-item">Is the vendor in a chain?</div>
+            <div class="script-item">How quickly are they looking to move?</div>
+          </div>
+          <div class="script-box">
+            <h4>About the Property</h4>
+            <div class="script-item">Has any planning permission been applied for previously?</div>
+            <div class="script-item">Are there any known issues with the property?</div>
+            <div class="script-item">What is included in the sale?</div>
+            <div class="script-item">Is it currently tenanted? If so what are the tenancy terms?</div>
+          </div>
+          <div class="warning-box">
+            <h4>&#9888; What NOT to Say</h4>
+            <ul>
+              <li>Do not mention HMO conversion</li>
+              <li>Do not mention planning for additional rooms</li>
+              <li>Do not mention your intentions for the property</li>
+              <li>You are a property investor looking for a 3-bed. That is all.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p2">
+        <div class="sec-header">
+          <div class="sec-icon">G</div>
+          <div class="sec-title"><h3>Ground Floor</h3><div class="subtitle">Living room, kitchen, dining room, WC, hallway</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="room-card">
+            <h4><div class="room-icon">LR</div> Living Room</h4>
+            <div class="measure-row"><label>Dimensions:</label><input class="measure-input" placeholder="L">&nbsp;<span class="measure-x">&times;</span>&nbsp;<input class="measure-input" placeholder="W"></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Check for damp — corners, skirting boards, behind radiators</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Note window condition — single or double glazed?</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — all 4 corners, ceiling, floor, windows, any issues</div></div>
+          </div>
+          <div class="room-card">
+            <h4><div class="room-icon">K</div> Kitchen</h4>
+            <div class="measure-row"><label>Dimensions:</label><input class="measure-input" placeholder="L">&nbsp;<span class="measure-x">&times;</span>&nbsp;<input class="measure-input" placeholder="W"></div>
+            <div class="form-group"><label class="form-label">Boiler location</label><input class="form-input" placeholder="e.g. Kitchen wall, utility cupboard"></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Note utilities — gas, electric, water locations</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — full room, boiler, utilities, any issues</div></div>
+          </div>
+          <div class="room-card">
+            <h4><div class="room-icon">DR</div> Dining Room / Second Reception</h4>
+            <div class="measure-row"><label>Dimensions:</label><input class="measure-input" placeholder="L">&nbsp;<span class="measure-x">&times;</span>&nbsp;<input class="measure-input" placeholder="W"></div>
+            <div class="form-group"><label class="form-label">Could this become a ground floor bedroom?</label>
+              <div class="radio-group"><div class="radio-btn" data-group="gf-bed">Yes</div><div class="radio-btn" data-group="gf-bed">No</div></div>
+            </div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Note position — rear room? Likely incorporated into extension plan</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — all 4 corners</div></div>
+          </div>
+          <div class="room-card">
+            <h4><div class="room-icon">WC</div> Ground Floor WC / Bathroom</h4>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Note soil pipe location — this tells you where future bathrooms can go</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — full room, soil pipe location</div></div>
+          </div>
+          <div class="room-card">
+            <h4><div class="room-icon">H</div> Hallway</h4>
+            <div class="measure-row"><label>Width:</label><input class="measure-input" placeholder="W"></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Note staircase position</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — hallway, stairs, front door</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p2">
+        <div class="sec-header">
+          <div class="sec-icon">1F</div>
+          <div class="sec-title"><h3>First Floor</h3><div class="subtitle">Bedrooms 1-3, bathroom, landing</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="room-card">
+            <h4><div class="room-icon">B1</div> Bedroom 1</h4>
+            <div class="measure-row"><label>Dimensions:</label><input class="measure-input" placeholder="L">&nbsp;<span class="measure-x">&times;</span>&nbsp;<input class="measure-input" placeholder="W"></div>
+            <div class="measure-row"><label>Ceiling height:</label><input class="measure-input" placeholder="H"></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Check for damp — corners, around windows, chimney breast</div></div>
+            <div class="form-group"><label class="form-label">En-suite potential?</label>
+              <div class="radio-group"><div class="radio-btn" data-group="b1es">Yes</div><div class="radio-btn" data-group="b1es">No</div><div class="radio-btn" data-group="b1es">Maybe</div></div>
+            </div>
+            <div class="form-group"><label class="form-label">Where would it go?</label><input class="form-input" placeholder="e.g. Corner by window"></div>
+            <div class="form-group"><label class="form-label">Viable HMO room size? (min 6.51 sq m)</label>
+              <div class="radio-group"><div class="radio-btn" data-group="b1size">Yes</div><div class="radio-btn" data-group="b1size">No</div></div>
+            </div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — all 4 corners, ceiling, windows, any issues</div></div>
+          </div>
+          <div class="room-card">
+            <h4><div class="room-icon">B2</div> Bedroom 2</h4>
+            <div class="measure-row"><label>Dimensions:</label><input class="measure-input" placeholder="L">&nbsp;<span class="measure-x">&times;</span>&nbsp;<input class="measure-input" placeholder="W"></div>
+            <div class="measure-row"><label>Ceiling height:</label><input class="measure-input" placeholder="H"></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Check for damp</div></div>
+            <div class="form-group"><label class="form-label">En-suite potential?</label>
+              <div class="radio-group"><div class="radio-btn" data-group="b2es">Yes</div><div class="radio-btn" data-group="b2es">No</div><div class="radio-btn" data-group="b2es">Maybe</div></div>
+            </div>
+            <div class="form-group"><label class="form-label">Viable HMO room size?</label>
+              <div class="radio-group"><div class="radio-btn" data-group="b2size">Yes</div><div class="radio-btn" data-group="b2size">No</div></div>
+            </div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — all 4 corners, ceiling, windows, any issues</div></div>
+          </div>
+          <div class="room-card">
+            <h4><div class="room-icon">B3</div> Bedroom 3</h4>
+            <div class="measure-row"><label>Dimensions:</label><input class="measure-input" placeholder="L">&nbsp;<span class="measure-x">&times;</span>&nbsp;<input class="measure-input" placeholder="W"></div>
+            <div class="measure-row"><label>Ceiling height:</label><input class="measure-input" placeholder="H"></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Check for damp</div></div>
+            <div class="form-group"><label class="form-label">En-suite potential?</label>
+              <div class="radio-group"><div class="radio-btn" data-group="b3es">Yes</div><div class="radio-btn" data-group="b3es">No</div><div class="radio-btn" data-group="b3es">Maybe</div></div>
+            </div>
+            <div class="form-group"><label class="form-label">Viable HMO room size?</label>
+              <div class="radio-group"><div class="radio-btn" data-group="b3size">Yes</div><div class="radio-btn" data-group="b3size">No</div></div>
+            </div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — all 4 corners, ceiling, windows, any issues</div></div>
+          </div>
+          <div class="room-card">
+            <h4><div class="room-icon">BA</div> Bathroom</h4>
+            <div class="measure-row"><label>Dimensions:</label><input class="measure-input" placeholder="L">&nbsp;<span class="measure-x">&times;</span>&nbsp;<input class="measure-input" placeholder="W"></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Note soil pipe locations</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Check condition</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — full room, soil pipe locations</div></div>
+          </div>
+          <div class="room-card">
+            <h4><div class="room-icon">L</div> Landing</h4>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Note width and layout</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Could any landing space be incorporated into rooms?</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Note loft hatch location</div></div>
+            <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p2">
+        <div class="sec-header">
+          <div class="sec-icon">&#9650;</div>
+          <div class="sec-title"><h3>Loft — Always Check</h3><div class="subtitle">Ask the agent for loft access. Do not skip this.</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="measure-row"><label>Head height at ridge:</label><input class="measure-input" placeholder="m"><span style="font-size:11px;color:rgba(255,255,255,.4);margin-left:8px;">(min 2.2m for viable conversion)</span></div>
+          <div class="form-group"><label class="form-label">Roof structure</label>
+            <div class="radio-group"><div class="radio-btn" data-group="roof">Cut roof (convertible)</div><div class="radio-btn" data-group="roof">Truss roof (more complex)</div></div>
+          </div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Any damp, rot or missing tiles visible from inside?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Full width span?</div></div>
+          <div class="form-group"><label class="form-label">Chimney stack position</label><input class="form-input" placeholder="e.g. Centre, left party wall"></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — every corner, ridge, eaves, roof structure, hatch opening</div></div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p2">
+        <div class="sec-header">
+          <div class="sec-icon">&#127793;</div>
+          <div class="sec-title"><h3>The Garden</h3><div class="subtitle">One of the most important parts for HMO conversion potential</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="measure-row"><label>Depth:</label><input class="measure-input" placeholder="m"></div>
+          <div class="measure-row"><label>Width:</label><input class="measure-input" placeholder="m"></div>
+          <div class="form-group"><label class="form-label">Level?</label>
+            <div class="radio-group"><div class="radio-btn" data-group="garden-level">Flat</div><div class="radio-btn" data-group="garden-level">Sloped (adds cost)</div></div>
+          </div>
+          <div class="form-group"><label class="form-label">Side access available?</label>
+            <div class="radio-group"><div class="radio-btn" data-group="side-access">Yes</div><div class="radio-btn" data-group="side-access">No</div></div>
+          </div>
+          <div class="form-group"><label class="form-label">Obstacles</label><input class="form-input" placeholder="Trees, outbuildings, manholes..."></div>
+          <div class="form-group"><label class="form-label">Garden orientation</label>
+            <div class="radio-group"><div class="radio-btn" data-group="orientation">South facing</div><div class="radio-btn" data-group="orientation">Other</div></div>
+          </div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Have neighbours extended already? (confirms planning achievable)</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — from back door, from bottom looking back, both sides, any obstacles</div></div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p2">
+        <div class="sec-header">
+          <div class="sec-icon">&#127968;</div>
+          <div class="sec-title"><h3>Exterior — Full Walk Round</h3><div class="subtitle">Complete external inspection</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Roof — missing tiles, sagging ridge, blocked gutters?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Brickwork — any diagonal cracks signalling subsidence?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Damp proof course — visible and clear?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Side return potential — is there a side extension opportunity?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Neighbouring extensions — what have they built? What has been approved?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Utility meter locations noted</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Photograph — all sides, any defects</div></div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p2">
+        <div class="sec-header">
+          <div class="sec-icon">&#128247;</div>
+          <div class="sec-title"><h3>Complete Photo Checklist</h3><div class="subtitle">Before leaving — confirm you have photographed everything</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="photo-grid">
+            <div class="photo-group">
+              <h5>Exterior</h5>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Front of property</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Street view both directions</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Side of property</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Rear from garden</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Roof line</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Any visible defects</div></div>
+            </div>
+            <div class="photo-group">
+              <h5>Garden</h5>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">From back door looking down</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">From bottom looking back at house</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Both sides</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Any trees, manholes, obstacles</div></div>
+            </div>
+            <div class="photo-group">
+              <h5>Every Room</h5>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">4 corners of every room</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Ceiling</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Floor</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Windows</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Any damp, cracks or defects</div></div>
+            </div>
+            <div class="photo-group">
+              <h5>Specifics</h5>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Boiler and utilities</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">All soil pipe locations</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Loft — everything</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Meter cupboard</div></div>
+              <div class="check-item"><div class="check-box"></div><div class="check-label">Any structural concerns</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p2">
+        <div class="sec-header">
+          <div class="sec-icon">&#9733;</div>
+          <div class="sec-title"><h3>Key Reminders on the Viewing</h3><div class="subtitle">Keep these front of mind throughout</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="reminder-grid">
+            <div class="reminder-item"><strong>Say nothing about your plans</strong><span>You are a property investor looking for a 3-bed</span></div>
+            <div class="reminder-item"><strong>Measure everything</strong><span>Never estimate or guess</span></div>
+            <div class="reminder-item"><strong>Photograph everything</strong><span>You will forget details within 48 hours</span></div>
+            <div class="reminder-item"><strong>Be systematic</strong><span>Work room by room, do not follow the agent's route</span></div>
+            <div class="reminder-item"><strong>Take your time</strong><span>You are entitled to spend as long as you need</span></div>
+            <div class="reminder-item"><strong>Trust your gut but verify</strong><span>If something feels wrong, photograph it and investigate</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- PART 3 -->
+    <!-- ================================================================ -->
+    <div class="part-content" id="part-3" data-title="Part 3 — Post-Viewing Decision">
+
+      <div class="section-card open" data-section="p3">
+        <div class="sec-header">
+          <div class="sec-icon">&#9201;</div>
+          <div class="sec-title"><h3>Immediately After the Viewing</h3><div class="subtitle">Complete within 24 hours of getting home</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Complete the HMO Potential Checker in full using your notes and photos</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Run the full numbers on the Numbers Calculator Pro</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Note your gut feeling — does this property excite you?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Compare against other properties on your shortlist</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Make a clear decision — pursue or move on</div></div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p3">
+        <div class="sec-header">
+          <div class="sec-icon">&#9878;</div>
+          <div class="sec-title"><h3>The Decision Framework</h3><div class="subtitle">Force a clear decision — no grey areas</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="decision-box green">
+            <h4>&#10003; Pursue this deal if:</h4>
+            <ul>
+              <li>The Potential Checker scored green</li>
+              <li>The numbers stack up on the Calculator Pro</li>
+              <li>No major structural red flags identified</li>
+              <li>Your gut says yes and the data backs it up</li>
+            </ul>
+          </div>
+          <div class="decision-box red">
+            <h4>&#10007; Do not pursue if:</h4>
+            <ul>
+              <li>The Potential Checker scored red</li>
+              <li>The numbers do not work even at optimistic room rents</li>
+              <li>Major structural issues identified — subsidence, serious damp, roof problems</li>
+              <li>The garden does not have enough depth for an extension to reach 6+ rooms</li>
+              <li>The loft has insufficient head height and no extension potential — meaning you cannot get to 6+ rooms</li>
+            </ul>
+          </div>
+          <div class="decision-box amber">
+            <h4>&#9888; Go back for a second viewing if:</h4>
+            <ul>
+              <li>The Potential Checker scored amber</li>
+              <li>You could not access the loft</li>
+              <li>You need to measure something you missed</li>
+              <li>You want to bring someone else — architect, builder, trusted investor</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p3">
+        <div class="sec-header">
+          <div class="sec-icon">&#128640;</div>
+          <div class="sec-title"><h3>If You Are Pursuing the Deal</h3><div class="subtitle">Next steps to secure the property</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Instruct a solicitor — get them ready to move when an offer is accepted</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Speak to your mortgage broker — confirm finance is in place</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Research comparable sold prices to inform your offer</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Decide on your opening offer — what is the maximum you will pay and still make it work?</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Make your offer</div></div>
+        </div>
+      </div>
+
+      <div class="section-card open" data-section="p3">
+        <div class="sec-header">
+          <div class="sec-icon">&#128260;</div>
+          <div class="sec-title"><h3>If No Qualifying Deal Found</h3><div class="subtitle">The pipeline does not stop</div></div>
+          <div class="sec-expand">&#9660;</div>
+        </div>
+        <div class="sec-content">
+          <div class="section-divider"></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Go back to Day 3 of the Action Plan — follow up with all agents</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Expand your search — adjacent postcodes, slightly larger radius</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">Re-run the Scorecard on a new target area if needed</div></div>
+          <div class="check-item"><div class="check-box"></div><div class="check-label">The pipeline continues until you find the right deal</div></div>
+        </div>
+      </div>
+
+      <div class="golden-rule">
+        <h3>The Golden Rule</h3>
+        <p>Never leave a viewing in a grey area. Force yourself to make a clear decision. Either you are pursuing this deal or you are not. Indecision costs more time than a wrong decision ever will.</p>
+      </div>
+    </div>
+
+    <!-- PDF -->
+    <div class="pdf-section">
+      <p>Completed your checklist? Save a PDF copy of your notes.</p>
+      <button class="pdf-btn" onclick="window.print()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Save as PDF
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    // Part switching
+    document.addEventListener('click', function(e) {
+      // Part tabs
+      const tab = e.target.closest('.part-tab');
+      if (tab) {
+        const part = tab.dataset.part;
+        document.querySelectorAll('.part-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.part-content').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('part-' + part).classList.add('active');
+        window.scrollTo({ top: document.querySelector('.part-tabs').offsetTop - 80, behavior: 'smooth' });
+        return;
+      }
+
+      // Section header toggle
+      const secHeader = e.target.closest('.sec-header');
+      if (secHeader) {
+        secHeader.closest('.section-card').classList.toggle('open');
+        return;
+      }
+
+      // Checkbox toggle
+      const checkItem = e.target.closest('.check-item');
+      if (checkItem) {
+        checkItem.classList.toggle('checked');
+        updateSectionProgress(checkItem);
+        updateTabProgress();
+        return;
+      }
+
+      // Radio buttons
+      const radioBtn = e.target.closest('.radio-btn');
+      if (radioBtn) {
+        const group = radioBtn.dataset.group;
+        if (group) {
+          document.querySelectorAll('.radio-btn[data-group="' + group + '"]').forEach(b => b.classList.remove('selected'));
+        } else {
+          const parent = radioBtn.closest('.radio-group');
+          if (parent) parent.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
+        }
+        radioBtn.classList.add('selected');
+        return;
+      }
+    });
+
+    function updateSectionProgress(el) {
+      const secContent = el.closest('.sec-content');
+      if (!secContent) return;
+      const bar = secContent.querySelector('.progress-bar-wrap');
+      if (!bar) return;
+      const items = secContent.querySelectorAll('.check-item');
+      const checked = secContent.querySelectorAll('.check-item.checked');
+      const pct = items.length ? (checked.length / items.length) * 100 : 0;
+      bar.querySelector('.progress-fill').style.width = pct + '%';
+      bar.querySelector('.prog-pct').textContent = checked.length + ' / ' + items.length;
+    }
+
+    function updateTabProgress() {
+      for (let p = 1; p <= 3; p++) {
+        const part = document.getElementById('part-' + p);
+        const items = part.querySelectorAll('.check-item');
+        const checked = part.querySelectorAll('.check-item.checked');
+        const pct = items.length ? Math.round((checked.length / items.length) * 100) : 0;
+        const tabProg = document.getElementById('tab-progress-' + p);
+        if (tabProg) tabProg.textContent = pct + '% complete';
+      }
+    }
+
+    // Initialise tab progress on load
+    updateTabProgress();
+  </script>
+
+</body>
+</html>
