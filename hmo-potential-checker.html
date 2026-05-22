@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HMO Potential Checker | The HMO Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { font-family: 'DM Sans', sans-serif; background: #0a1628; color: #ffffff; min-height: 100vh; overflow-x: hidden; width: 100%; max-width: 100vw; }
+
+    .page-header { background: #060f1d; border-bottom: 1px solid rgba(201,168,76,0.15); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: #C9A84C; }
+    .logo span { color: #ffffff; font-weight: 400; font-size: 14px; margin-left: 8px; }
+    .nav-pills { display: flex; gap: 6px; }
+    .nav-pill { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); white-space: nowrap; }
+    .nav-pill.active { background: rgba(201,168,76,0.15); color: #C9A84C; border-color: rgba(201,168,76,0.3); }
+
+    .content-area { max-width: 820px; margin: 0 auto; padding: 40px 20px 80px; width: 100%; }
+
+    .page-title { text-align: center; margin-bottom: 32px; }
+    .page-title .badge { display: inline-block; background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.3); border-radius: 20px; padding: 5px 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #C9A84C; margin-bottom: 14px; }
+    .page-title h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .page-title p { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.6; max-width: 600px; margin: 0 auto; }
+
+    /* CATEGORY CARDS */
+    .cat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; margin-bottom: 16px; overflow: hidden; transition: border-color 0.3s; }
+    .cat-card.complete { border-color: rgba(74,222,128,0.25); }
+    .cat-header { display: flex; align-items: center; gap: 14px; padding: 20px 24px; cursor: pointer; }
+    .cat-header:hover { background: rgba(255,255,255,0.02); }
+    .cat-number { width: 44px; height: 44px; border-radius: 12px; background: rgba(201,168,76,0.12); color: #C9A84C; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; font-family: 'Playfair Display', serif; transition: all 0.3s; }
+    .cat-title { flex: 1; }
+    .cat-title h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #ffffff; }
+    .cat-title .subtitle { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 4px; line-height: 1.5; font-style: italic; }
+    .cat-expand { width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.4); font-size: 12px; flex-shrink: 0; transition: transform 0.3s; }
+    .cat-card.open .cat-expand { transform: rotate(180deg); color: #C9A84C; }
+    .cat-content { display: none; padding: 0 24px 24px; }
+    .cat-card.open .cat-content { display: block; }
+
+    /* RAG STATUS */
+    .rag-status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 16px; transition: all 0.3s; }
+    .rag-green { background: rgba(74,222,128,0.12); color: #4ade80; border: 1px solid rgba(74,222,128,0.25); }
+    .rag-amber { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+    .rag-red { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+    .rag-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .rag-green .rag-dot { background: #4ade80; }
+    .rag-amber .rag-dot { background: #fbbf24; }
+    .rag-red .rag-dot { background: #ef4444; }
+
+    .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent); margin: 20px 0; }
+
+    /* FORMS */
+    .form-group { margin-bottom: 18px; }
+    .form-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 8px; display: block; }
+    .form-label.gold { color: #C9A84C; font-weight: 700; }
+    .form-input { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 16px; color: #ffffff; font-size: 14px; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s; }
+    .form-input:focus { outline: none; border-color: #C9A84C; background: rgba(201,168,76,0.03); }
+    .form-input::placeholder { color: rgba(255,255,255,0.3); }
+    .form-input:disabled { opacity: 0.5; cursor: not-allowed; }
+    .form-textarea { min-height: 80px; resize: vertical; }
+    .form-row { display: flex; gap: 12px; }
+    .form-row .form-group { flex: 1; }
+    .form-select { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 16px; color: #ffffff; font-size: 14px; font-family: 'DM Sans', sans-serif; appearance: none; cursor: pointer; }
+    .form-select:focus { outline: none; border-color: #C9A84C; }
+    .form-select option { background: #0a1628; color: #ffffff; }
+
+    /* RADIO BUTTONS */
+    .radio-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .radio-btn { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.5); transition: all 0.2s; }
+    .radio-btn:hover { border-color: rgba(201,168,76,0.3); }
+    .radio-btn.selected { border-color: #C9A84C; background: rgba(201,168,76,0.1); color: #C9A84C; }
+
+    .helper-text { background: rgba(201,168,76,0.04); border-left: 3px solid rgba(201,168,76,0.4); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.7; font-style: italic; }
+
+    /* AUTO CALC */
+    .auto-calc { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: rgba(74,222,128,0.05); border: 1px solid rgba(74,222,128,0.15); border-radius: 10px; margin-bottom: 10px; }
+    .auto-calc.gold { background: rgba(201,168,76,0.05); border-color: rgba(201,168,76,0.3); }
+    .auto-calc.amber { background: rgba(251,191,36,0.05); border-color: rgba(251,191,36,0.2); }
+    .calc-label { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 500; flex: 1; }
+    .calc-value { font-size: 14px; font-weight: 700; color: #4ade80; font-family: 'Playfair Display', serif; white-space: nowrap; }
+    .calc-value.gold { color: #C9A84C; font-size: 18px; }
+    .calc-value.amber { color: #fbbf24; }
+    .calc-value.red { color: #ef4444; }
+
+    /* FLAG BOXES */
+    .flag-box { padding: 12px 16px; border-radius: 10px; margin: 12px 0; font-size: 12px; line-height: 1.7; }
+    .flag-box.flag-green { background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.2); color: rgba(74,222,128,0.85); }
+    .flag-box.flag-amber { background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2); color: rgba(251,191,36,0.85); }
+    .flag-box.flag-red { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); color: rgba(239,68,68,0.85); }
+
+    /* CHECKBOXES */
+    .check-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+    .check-item:hover { border-color: rgba(201,168,76,0.2); }
+    .check-item.checked { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.04); }
+    .check-box { width: 20px; height: 20px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+    .check-item.checked .check-box { border-color: #4ade80; background: #4ade80; }
+    .check-box::after { content: ''; display: none; width: 5px; height: 9px; border: 2px solid #0a1628; border-top: none; border-left: none; transform: rotate(45deg) translate(-1px, -1px); }
+    .check-item.checked .check-box::after { display: block; }
+    .check-label { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500; }
+    .check-item.checked .check-label { color: #4ade80; }
+
+    /* TABLE */
+    .table-wrapper { overflow-x: auto; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .data-table th { background: rgba(201,168,76,0.1); color: #C9A84C; font-weight: 700; text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; }
+    .data-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); }
+    .data-table tr:last-child td { border-bottom: none; }
+    .td-green { color: #4ade80 !important; }
+    .td-red { color: #ef4444 !important; }
+    .td-amber { color: #fbbf24 !important; }
+
+    /* VERDICT */
+    .verdict-section { margin-top: 36px; padding: 32px; border-radius: 16px; text-align: center; display: none; }
+    .verdict-section.show { display: block; }
+    .verdict-green { background: rgba(74,222,128,0.06); border: 2px solid rgba(74,222,128,0.3); }
+    .verdict-amber { background: rgba(251,191,36,0.06); border: 2px solid rgba(251,191,36,0.3); }
+    .verdict-red { background: rgba(239,68,68,0.06); border: 2px solid rgba(239,68,68,0.3); }
+    .verdict-icon { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+    .verdict-green .verdict-icon { background: rgba(74,222,128,0.15); }
+    .verdict-amber .verdict-icon { background: rgba(251,191,36,0.15); }
+    .verdict-red .verdict-icon { background: rgba(239,68,68,0.15); }
+    .verdict-section h3 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+    .verdict-green h3 { color: #4ade80; }
+    .verdict-amber h3 { color: #fbbf24; }
+    .verdict-red h3 { color: #ef4444; }
+    .verdict-text { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.7; max-width: 550px; margin: 0 auto 20px; }
+
+    /* RAG SUMMARY GRID */
+    .rag-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+    .rag-summary-item { padding: 12px; border-radius: 10px; text-align: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); }
+    .rsi-label { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .rsi-dot { width: 12px; height: 12px; border-radius: 50%; margin: 0 auto; }
+    .rsi-dot.green { background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.4); }
+    .rsi-dot.amber { background: #fbbf24; box-shadow: 0 0 8px rgba(251,191,36,0.4); }
+    .rsi-dot.red { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,0.4); }
+    .rsi-dot.empty { background: rgba(255,255,255,0.15); }
+
+    /* UPSELL */
+    .upsell-box { background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.25); border-radius: 16px; padding: 28px; margin-top: 28px; text-align: center; }
+    .upsell-box h4 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: #C9A84C; margin-bottom: 10px; }
+    .upsell-highlight { font-size: 14px; font-weight: 600; margin: 16px 0 18px; }
+    .upsell-highlight .can { color: #4ade80; }
+    .upsell-highlight .should { color: #C9A84C; }
+    .upsell-box p { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.7; margin-bottom: 16px; }
+    .upsell-btn { display: inline-block; padding: 14px 32px; border-radius: 10px; font-size: 14px; font-weight: 700; background: #C9A84C; color: #0a1628; cursor: pointer; transition: all 0.2s; border: none; font-family: 'DM Sans', sans-serif; }
+    .upsell-btn:hover { background: #e8c96d; transform: translateY(-2px); }
+
+    /* PDF */
+    .pdf-section { text-align: center; padding: 32px 20px; margin-top: 20px; border-top: 1px solid rgba(201,168,76,0.15); }
+    .pdf-section p { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 16px; font-style: italic; }
+    .pdf-btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; background: #C9A84C; color: #0a1628; border: none; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+    .pdf-btn:hover { background: #e8c96d; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+
+    @media (max-width: 768px) {
+      .page-header { padding: 10px 12px; }
+      .nav-pills { display: none; }
+      .content-area { padding: 20px 14px 60px; }
+      .page-title h1 { font-size: 22px; }
+      .cat-header { padding: 16px 14px; gap: 10px; }
+      .cat-content { padding: 0 14px 20px; }
+      .cat-number { width: 36px; height: 36px; font-size: 14px; }
+      .cat-title h3 { font-size: 17px; }
+      .form-row { flex-direction: column; gap: 0; }
+      .radio-group { flex-direction: column; }
+      .radio-btn { text-align: center; }
+      .rag-summary { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media print {
+      *, *::before, *::after { color: #111111 !important; background: #ffffff !important; border-color: #cccccc !important; box-shadow: none !important; }
+      .page-header, .pdf-section, .upsell-box, .cat-expand { display: none !important; }
+      .cat-card { border: 1px solid #999999 !important; break-inside: avoid; margin-bottom: 16px; }
+      .cat-content { display: block !important; }
+      .cat-header { background: #eeeeee !important; padding: 12px 16px !important; }
+      .cat-number { background: #dddddd !important; color: #111111 !important; }
+      .cat-title h3, .cat-title .subtitle { color: #111111 !important; }
+      .form-label { color: #333333 !important; }
+      .form-label.gold { color: #333333 !important; }
+      .form-input, .form-select, .form-textarea { background: #f9f9f9 !important; color: #111111 !important; border: 1px solid #cccccc !important; }
+      .radio-btn { border: 1px solid #cccccc !important; color: #333333 !important; }
+      .radio-btn.selected { border: 2px solid #333333 !important; color: #111111 !important; font-weight: 700 !important; }
+      .auto-calc { background: #f5f5f5 !important; border: 1px solid #cccccc !important; }
+      .calc-label { color: #333333 !important; }
+      .calc-value { color: #111111 !important; }
+      .calc-value.gold { color: #111111 !important; }
+      .helper-text { background: #f9f9f9 !important; border-left: 3px solid #999999 !important; color: #444444 !important; }
+      .flag-box { background: #f5f5f5 !important; border: 1px solid #cccccc !important; color: #111111 !important; }
+      .rag-status { background: #eeeeee !important; border: 1px solid #cccccc !important; color: #111111 !important; }
+      .rag-dot { background: #555555 !important; }
+      .section-divider { background: #cccccc !important; }
+      .data-table th { background: #dddddd !important; color: #111111 !important; }
+      .data-table td { color: #333333 !important; border-bottom: 1px solid #dddddd !important; }
+      .table-wrapper { border: 1px solid #cccccc !important; }
+      .td-green, .td-amber, .td-red { color: #111111 !important; }
+      .check-item { border: 1px solid #cccccc !important; background: #ffffff !important; }
+      .check-label { color: #111111 !important; }
+      .check-box { border: 2px solid #555555 !important; background: #ffffff !important; }
+      .check-item.checked .check-box { background: #333333 !important; }
+      .check-item.checked .check-box::after { border-color: #ffffff !important; display: block !important; }
+      .verdict-section { border: 2px solid #999999 !important; background: #f5f5f5 !important; }
+      .verdict-section h3 { color: #111111 !important; }
+      .verdict-text { color: #333333 !important; }
+      .verdict-icon { background: #eeeeee !important; color: #111111 !important; }
+      .rag-summary-item { border: 1px solid #cccccc !important; background: #f9f9f9 !important; }
+      .rsi-label { color: #555555 !important; }
+      .rsi-dot { background: #555555 !important; box-shadow: none !important; }
+      .page-title h1, .page-title p { color: #111111 !important; }
+      .page-title .badge { background: #eeeeee !important; color: #333333 !important; border: 1px solid #cccccc !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="logo">The HMO Blueprint <span>| Tools</span></div>
+    <div class="nav-pills">
+      <div class="nav-pill">Scorecard</div>
+      <div class="nav-pill">Action Plan</div>
+      <div class="nav-pill">Checklist</div>
+      <div class="nav-pill active">Potential Checker</div>
+      <div class="nav-pill">Roadmap</div>
+    </div>
+  </header>
+
+  <div class="content-area">
+
+    <div class="page-title">
+      <div class="badge">Interactive Tool</div>
+      <h1>HMO Potential Checker</h1>
+      <p>Take a specific property and answer one question: <strong style="color:#C9A84C;">"Can this property actually become a viable, profitable HMO?"</strong></p>
+    </div>
+
+    <!-- CAT 1 — PLANNING -->
+    <div class="cat-card" id="cat-1">
+      <div class="cat-header">
+        <div class="cat-number">1</div>
+        <div class="cat-title">
+          <h3>Planning &amp; Permitted Use</h3>
+          <div class="subtitle">Establish whether this property can legally operate as an HMO and what planning route is required</div>
+        </div>
+        <div class="cat-expand">&#9660;</div>
+      </div>
+      <div class="cat-content">
+        <div class="section-divider"></div>
+        <div class="form-group">
+          <label class="form-label">Property Address</label>
+          <input type="text" class="form-input" placeholder="Enter the full property address">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Is the property currently C3 residential use?</label>
+          <div class="radio-group" data-name="c3use">
+            <div class="radio-btn selected" data-value="yes">Yes</div>
+            <div class="radio-btn" data-value="no">No</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Is the area subject to an Article 4 direction?</label>
+          <div class="radio-group" data-name="article4">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+            <div class="radio-btn" data-value="unsure">Not sure</div>
+          </div>
+          <div class="helper-text">To check if your area has an Article 4 direction, search '[your local authority] Article 4 HMO' or check the planning section of your local council website.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">If Article 4 YES — does the property have existing C4 or Sui Generis planning consent?</label>
+          <div class="radio-group" data-name="existing-consent">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+            <div class="radio-btn" data-value="unknown">Unknown</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Has the property ever been used as an HMO previously?</label>
+          <div class="radio-group" data-name="prev-hmo">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+            <div class="radio-btn" data-value="unknown">Unknown</div>
+          </div>
+          <div class="helper-text">If the property was continuously used as an HMO before the Article 4 direction was introduced, you may be able to claim lawful existing use without a full planning application. Evidence required includes tenancy agreements, utility bills and council tax records.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Any planning applications or enforcement notices on record?</label>
+          <div class="radio-group" data-name="enforcement">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+          </div>
+          <textarea class="form-input form-textarea" placeholder="Notes on planning history..." style="margin-top:8px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target use class</label>
+          <div class="radio-group" data-name="use-class">
+            <div class="radio-btn selected" data-value="c4">C4 (up to 6 tenants)</div>
+            <div class="radio-btn" data-value="sg">Sui Generis (7+ tenants)</div>
+          </div>
+        </div>
+        <div class="rag-status rag-green" id="rag-1"><div class="rag-dot"></div> <span>Green — No restrictions identified</span></div>
+      </div>
+    </div>
+
+    <!-- CAT 2 — DENSITY -->
+    <div class="cat-card" id="cat-2">
+      <div class="cat-header">
+        <div class="cat-number">2</div>
+        <div class="cat-title">
+          <h3>HMO Density &amp; Sandwiching</h3>
+          <div class="subtitle">Check whether the local authority will accept another HMO on this street</div>
+        </div>
+        <div class="cat-expand">&#9660;</div>
+      </div>
+      <div class="cat-content">
+        <div class="section-divider"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Properties on the street (approx)</label>
+            <input type="number" class="form-input" placeholder="e.g. 40" id="street-props">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Licensed HMOs on the street</label>
+            <input type="number" class="form-input" placeholder="e.g. 3" id="street-hmos">
+          </div>
+        </div>
+        <div class="auto-calc">
+          <span class="calc-label">Estimated HMO density on street</span>
+          <span class="calc-value" id="density-calc">—</span>
+        </div>
+        <div class="helper-text">To find licensed HMOs in your area, search your local council website for 'HMO register' or 'licensed HMO list'. Most councils publish this publicly. Count the HMOs within 50-100 metres of your target property.</div>
+        <div class="form-group">
+          <label class="form-label">Is the property directly sandwiched between two existing HMOs?</label>
+          <div class="radio-group" data-name="sandwiched">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+            <div class="radio-btn" data-value="unknown">Unknown</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Does your local authority have an HMO concentration policy?</label>
+          <div class="radio-group" data-name="concentration-policy">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn" data-value="no">No</div>
+            <div class="radio-btn selected" data-value="unknown">Unknown</div>
+          </div>
+          <textarea class="form-input form-textarea" placeholder="Notes on local policy..." style="margin-top:8px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Local authority max HMO concentration threshold</label>
+          <input type="text" class="form-input" placeholder="e.g. 10% or Unknown">
+        </div>
+        <div class="helper-text">Many councils operate a policy that refuses HMO planning applications where more than 10-20% of properties in a defined area are already HMOs. Some councils also refuse applications where the property sits directly between two existing HMOs — this is known as sandwiching.</div>
+        <div class="rag-status rag-green" id="rag-2"><div class="rag-dot"></div> <span>Green — Density under threshold, no sandwiching</span></div>
+      </div>
+    </div>
+
+    <!-- CAT 3 — PHYSICAL -->
+    <div class="cat-card" id="cat-3">
+      <div class="cat-header">
+        <div class="cat-number">3</div>
+        <div class="cat-title">
+          <h3>Physical Property Assessment</h3>
+          <div class="subtitle">Establish whether the property has enough floor space to viably accommodate the target number of HMO rooms</div>
+        </div>
+        <div class="cat-expand">&#9660;</div>
+      </div>
+      <div class="cat-content">
+        <div class="section-divider"></div>
+        <label class="form-label gold">Current Property</label>
+        <div class="form-row" style="margin-top:12px;">
+          <div class="form-group">
+            <label class="form-label">Current bedroom count</label>
+            <input type="number" class="form-input" placeholder="3" id="current-beds">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Total floor area (sq m, excl. loft)</label>
+            <input type="number" class="form-input" placeholder="e.g. 90" id="floor-area">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Usable loft space?</label>
+            <div class="radio-group" data-name="loft">
+              <div class="radio-btn selected" data-value="yes">Yes</div>
+              <div class="radio-btn" data-value="no">No</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rear garden?</label>
+            <div class="radio-group" data-name="garden">
+              <div class="radio-btn selected" data-value="yes">Yes</div>
+              <div class="radio-btn" data-value="no">No</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Approximate rear garden length (metres)</label>
+          <input type="number" class="form-input" placeholder="e.g. 12" id="garden-length">
+        </div>
+        <div class="section-divider"></div>
+        <label class="form-label gold">Target Conversion</label>
+        <div class="form-row" style="margin-top:12px;">
+          <div class="form-group">
+            <label class="form-label">Target bedroom count after conversion</label>
+            <input type="number" class="form-input" placeholder="6" id="target-beds">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target min room size (sq m)</label>
+            <input type="number" class="form-input" value="10" id="min-room-size">
+          </div>
+        </div>
+        <div class="auto-calc">
+          <span class="calc-label">Min floor area required (rooms x min size + 30% communal)</span>
+          <span class="calc-value" id="min-area-calc">—</span>
+        </div>
+        <div class="auto-calc" id="area-check-row">
+          <span class="calc-label">Does current floor area meet requirement?</span>
+          <span class="calc-value" id="area-check">—</span>
+        </div>
+        <div class="form-group" style="margin-top:16px;">
+          <label class="form-label">Room Size Viability Breakdown</label>
+          <div class="table-wrapper">
+            <table class="data-table" id="room-table">
+              <thead><tr><th>Room</th><th>Min Size (sq m)</th><th>Achievable?</th></tr></thead>
+              <tbody id="room-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="helper-text">The legal minimum bedroom size for an HMO is 6.51 sq m, but we recommend targeting rooms of 10 sq m or more. Rooms under 10 sq m are harder to let, attract lower rents and may fall foul of future regulation changes. Rooms of 12-14 sq m are the sweet spot for ensuite conversion and premium rents.</div>
+        <div class="rag-status rag-green" id="rag-3"><div class="rag-dot"></div> <span>Green — Floor area supports target room count</span></div>
+      </div>
+    </div>
+
+    <!-- CAT 4 — EXTENSION -->
+    <div class="cat-card" id="cat-4">
+      <div class="cat-header">
+        <div class="cat-number">4</div>
+        <div class="cat-title">
+          <h3>Extension &amp; Conversion Potential</h3>
+          <div class="subtitle">Establish what physical expansion is possible and what permissions are required</div>
+        </div>
+        <div class="cat-expand">&#9660;</div>
+      </div>
+      <div class="cat-content">
+        <div class="section-divider"></div>
+        <label class="form-label gold">Rear Extension</label>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Is rear extension possible?</label>
+          <div class="radio-group" data-name="ext-possible">
+            <div class="radio-btn selected" data-value="yes">Yes</div>
+            <div class="radio-btn" data-value="no">No</div>
+            <div class="radio-btn" data-value="unknown">Unknown</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Property type</label>
+          <div class="radio-group" data-name="prop-type">
+            <div class="radio-btn selected" data-value="terraced">Terraced</div>
+            <div class="radio-btn" data-value="semi">Semi-detached</div>
+            <div class="radio-btn" data-value="detached">Detached</div>
+          </div>
+        </div>
+        <div class="auto-calc" id="pd-limit-row">
+          <span class="calc-label">Permitted development extension limit</span>
+          <span class="calc-value" id="pd-limit">6m (terraced)</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Estimated extension depth (m)</label>
+            <input type="number" class="form-input" placeholder="e.g. 6" id="ext-depth">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Property width (m)</label>
+            <input type="number" class="form-input" placeholder="e.g. 5" id="ext-width">
+          </div>
+        </div>
+        <div class="auto-calc">
+          <span class="calc-label">Estimated sq m gained from rear extension (depth x width)</span>
+          <span class="calc-value" id="ext-sqm-calc">—</span>
+        </div>
+        <div class="auto-calc" id="larger-home-row">
+          <span class="calc-label">Larger Home Extension Application required?</span>
+          <span class="calc-value" id="larger-home-val">—</span>
+        </div>
+        <div class="section-divider"></div>
+        <label class="form-label gold">Loft Conversion</label>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Is loft conversion viable?</label>
+          <div class="radio-group" data-name="loft-viable">
+            <div class="radio-btn selected" data-value="yes">Yes</div>
+            <div class="radio-btn" data-value="no">No</div>
+            <div class="radio-btn" data-value="unknown">Unknown</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Roof type</label>
+          <div class="radio-group" data-name="roof-type">
+            <div class="radio-btn selected" data-value="pitched">Pitched</div>
+            <div class="radio-btn" data-value="hip">Hip</div>
+            <div class="radio-btn" data-value="flat">Flat</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Dormer potential?</label>
+            <div class="radio-group" data-name="dormer">
+              <div class="radio-btn selected" data-value="yes">Yes</div>
+              <div class="radio-btn" data-value="no">No</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estimated sq m gained from loft</label>
+            <input type="number" class="form-input" placeholder="e.g. 25" id="loft-sqm">
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="form-group">
+          <label class="form-label">Side return potential?</label>
+          <div class="radio-group" data-name="side-return">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+            <div class="radio-btn" data-value="na">N/A</div>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <label class="form-label gold">Party Wall</label>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Does the property share a wall with a neighbour?</label>
+          <div class="radio-group" data-name="party-wall">
+            <div class="radio-btn selected" data-value="yes">Yes</div>
+            <div class="radio-btn" data-value="no">No</div>
+          </div>
+        </div>
+        <div class="auto-calc amber">
+          <span class="calc-label">Party wall notice required?</span>
+          <span class="calc-value amber" id="party-wall-val">Yes — budget £1,000-£3,000 per surveyor</span>
+        </div>
+        <div class="helper-text">If your renovation involves work on or near a shared wall, you must serve a party wall notice at least 2 months before work begins. Skipping this step can result in injunctions, legal costs and significant delays.</div>
+        <div class="section-divider"></div>
+        <label class="form-label gold">Total Additional Space Summary</label>
+        <div style="margin-top:12px;">
+          <div class="auto-calc">
+            <span class="calc-label">From rear extension</span>
+            <span class="calc-value" id="ext-total">—</span>
+          </div>
+          <div class="auto-calc">
+            <span class="calc-label">From loft conversion</span>
+            <span class="calc-value" id="loft-total">—</span>
+          </div>
+          <div class="auto-calc gold">
+            <span class="calc-label" style="font-weight:700; color:rgba(255,255,255,0.7);">Total property sq m post-conversion</span>
+            <span class="calc-value gold" id="total-sqm">—</span>
+          </div>
+        </div>
+        <div class="rag-status rag-green" id="rag-4"><div class="rag-dot"></div> <span>Green — Extension potential confirmed</span></div>
+      </div>
+    </div>
+
+    <!-- CAT 5 — STRUCTURAL -->
+    <div class="cat-card" id="cat-5">
+      <div class="cat-header">
+        <div class="cat-number">5</div>
+        <div class="cat-title">
+          <h3>Construction &amp; Structural</h3>
+          <div class="subtitle">Identify any construction or structural issues that could make the property unmortgageable, unlettable or unviable</div>
+        </div>
+        <div class="cat-expand">&#9660;</div>
+      </div>
+      <div class="cat-content">
+        <div class="section-divider"></div>
+        <label class="form-label gold">Construction Type — CRITICAL</label>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Construction type</label>
+          <select class="form-select" id="construction-type">
+            <option value="brick">Brick / Stone (standard)</option>
+            <option value="timber">Timber frame</option>
+            <option value="concrete">Concrete panel</option>
+            <option value="prefab">Prefab</option>
+            <option value="steel">Steel frame</option>
+            <option value="unknown">Unknown</option>
+          </select>
+        </div>
+        <div class="flag-box flag-green" id="construction-flag">Standard brick/stone construction — no mortgage restrictions expected.</div>
+        <div class="section-divider"></div>
+        <label class="form-label gold">Ownership</label>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Freehold or Leasehold?</label>
+          <div class="radio-group" data-name="tenure">
+            <div class="radio-btn selected" data-value="freehold">Freehold</div>
+            <div class="radio-btn" data-value="leasehold">Leasehold</div>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <label class="form-label gold">Structural Flags</label>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Any visible damp at viewing?</label>
+          <div class="radio-group" data-name="damp">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Any visible subsidence or cracking?</label>
+          <div class="radio-group" data-name="subsidence">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Roof condition</label>
+          <div class="radio-group" data-name="roof-condition">
+            <div class="radio-btn selected" data-value="good">Good</div>
+            <div class="radio-btn" data-value="attention">Needs attention</div>
+            <div class="radio-btn" data-value="poor">Poor</div>
+            <div class="radio-btn" data-value="unknown">Unknown</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Flat roof present?</label>
+          <div class="radio-group" data-name="flat-roof">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Other structural concerns</label>
+          <textarea class="form-input form-textarea" placeholder="Any other concerns noted at viewing..."></textarea>
+        </div>
+        <div class="section-divider"></div>
+        <label class="form-label gold">Legal Flags</label>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Listed building?</label>
+          <div class="radio-group" data-name="listed">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Conservation area?</label>
+          <div class="radio-group" data-name="conservation">
+            <div class="radio-btn" data-value="yes">Yes</div>
+            <div class="radio-btn selected" data-value="no">No</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Flood risk zone</label>
+          <div class="radio-group" data-name="flood">
+            <div class="radio-btn selected" data-value="zone1">Zone 1 (low)</div>
+            <div class="radio-btn" data-value="zone2">Zone 2 (medium)</div>
+            <div class="radio-btn" data-value="zone3">Zone 3 (high)</div>
+            <div class="radio-btn" data-value="unknown">Unknown</div>
+          </div>
+        </div>
+        <div class="rag-status rag-green" id="rag-5"><div class="rag-dot"></div> <span>Green — Standard construction, freehold, no concerns</span></div>
+      </div>
+    </div>
+
+    <!-- CAT 6 — COMMERCIAL -->
+    <div class="cat-card" id="cat-6">
+      <div class="cat-header">
+        <div class="cat-number">6</div>
+        <div class="cat-title">
+          <h3>Commercial Valuation Potential</h3>
+          <div class="subtitle">Assess whether this property can achieve a commercial valuation at refinance — the key to making BRRR work at scale</div>
+        </div>
+        <div class="cat-expand">&#9660;</div>
+      </div>
+      <div class="cat-content">
+        <div class="section-divider"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Target bedroom count</label>
+            <input type="number" class="form-input" placeholder="6" id="cv-beds">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target bedrooms all ensuite?</label>
+            <div class="radio-group" data-name="ensuite">
+              <div class="radio-btn selected" data-value="yes">Yes</div>
+              <div class="radio-btn" data-value="no">No</div>
+              <div class="radio-btn" data-value="majority">Majority</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Will the conversion be so far removed from a standard home it cannot be valued on bricks and mortar?</label>
+          <div class="radio-group" data-name="commercial-likely">
+            <div class="radio-btn selected" data-value="yes">Yes</div>
+            <div class="radio-btn" data-value="no">No</div>
+            <div class="radio-btn" data-value="unsure">Unsure</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Strong rental demand confirmed from Market Viability Scorecard?</label>
+          <div class="radio-group" data-name="demand-confirmed">
+            <div class="radio-btn selected" data-value="yes">Yes</div>
+            <div class="radio-btn" data-value="no">No</div>
+          </div>
+        </div>
+        <div class="auto-calc" id="cv-beds-check-row">
+          <span class="calc-label">Target bedroom count 6 or more?</span>
+          <span class="calc-value" id="cv-beds-check">—</span>
+        </div>
+        <div class="auto-calc" id="cv-verdict-row">
+          <span class="calc-label">Commercial valuation likely?</span>
+          <span class="calc-value" id="cv-verdict">—</span>
+        </div>
+        <div class="helper-text">Commercial valuation is what makes BRRR work at scale. When a property is so far removed from a standard home — 6+ ensuite rooms, fire doors, interlinked alarms throughout — a lender will instruct a valuer to assess it on rental income rather than comparable house prices. This typically results in a significantly higher valuation, allowing you to pull more capital out at refinance.</div>
+        <div class="helper-text">A 3-bed converted to 6-7 ensuite rooms achieves full commercial valuation. A 3-bed converted to 5 beds without ensuites may only achieve bricks and mortar — the BRRR numbers rarely stack up in this scenario.</div>
+        <div class="rag-status rag-green" id="rag-6"><div class="rag-dot"></div> <span>Green — Commercial valuation likely</span></div>
+      </div>
+    </div>
+
+    <!-- VERDICT -->
+    <div class="verdict-section" id="verdictSection">
+      <div class="verdict-icon" id="verdictIcon"></div>
+      <h3 id="verdictTitle"></h3>
+      <div class="verdict-text" id="verdictText"></div>
+      <div class="rag-summary" id="ragSummary">
+        <div class="rag-summary-item"><div class="rsi-label">Planning</div><div class="rsi-dot" id="rs1"></div></div>
+        <div class="rag-summary-item"><div class="rsi-label">Density</div><div class="rsi-dot" id="rs2"></div></div>
+        <div class="rag-summary-item"><div class="rsi-label">Physical</div><div class="rsi-dot" id="rs3"></div></div>
+        <div class="rag-summary-item"><div class="rsi-label">Extension</div><div class="rsi-dot" id="rs4"></div></div>
+        <div class="rag-summary-item"><div class="rsi-label">Structural</div><div class="rsi-dot" id="rs5"></div></div>
+        <div class="rag-summary-item"><div class="rsi-label">Commercial</div><div class="rsi-dot" id="rs6"></div></div>
+      </div>
+    </div>
+
+    <!-- UPSELL -->
+    <div class="upsell-box">
+      <h4>Your property passed the HMO Potential Checker.</h4>
+      <h4 style="margin-top:4px; font-size:16px; color:rgba(255,255,255,0.7); font-weight:400;">Now it is time to confirm the numbers.</h4>
+      <div class="upsell-highlight">
+        <span>The HMO Potential Checker tells you if the property <span class="can">CAN</span> be an HMO.</span><br>
+        <span>The HMO Deal Analyser tells you if it <span class="should">SHOULD</span> be.</span>
+      </div>
+      <p>Run your full financial analysis — purchase costs, refurb budget, bridging finance, projected rental income, refinance valuation and your exact return on capital employed.</p>
+      <button class="upsell-btn">Get the HMO Deal Analyser &rarr;</button>
+    </div>
+
+    <!-- PDF -->
+    <div class="pdf-section">
+      <p>Completed the checker? Save a PDF copy of your assessment.</p>
+      <button class="pdf-btn" onclick="window.print()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Save as PDF
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    // RAG state per category
+    const ragState = { 1: 'green', 2: 'green', 3: 'green', 4: 'green', 5: 'green', 6: 'green' };
+
+    function setRag(num, colour, text) {
+      // placeholder — overridden below after catTouched is defined
+      ragState[num] = colour;
+      const el = document.getElementById('rag-' + num);
+      el.className = 'rag-status rag-' + colour;
+      el.innerHTML = '<div class="rag-dot"></div> <span>' + text + '</span>';
+      updateVerdict();
+    }
+
+    function updateVerdict() {
+      const colours = Object.values(ragState);
+      const reds = colours.filter(c => c === 'red').length;
+      const ambers = colours.filter(c => c === 'amber').length;
+      const vs = document.getElementById('verdictSection');
+      vs.classList.add('show');
+      if (reds > 0) {
+        vs.className = 'verdict-section show verdict-red';
+        document.getElementById('verdictIcon').textContent = '🔴';
+        document.getElementById('verdictTitle').textContent = 'SIGNIFICANT ISSUES IDENTIFIED';
+        document.getElementById('verdictText').textContent = 'One or more red flags have been identified. Review the red categories carefully before proceeding. This property may not be viable as an HMO without resolving these issues first.';
+      } else if (ambers > 0) {
+        vs.className = 'verdict-section show verdict-amber';
+        document.getElementById('verdictIcon').textContent = '⚠️';
+        document.getElementById('verdictTitle').textContent = 'POTENTIAL WITH CAUTION';
+        document.getElementById('verdictText').textContent = 'Some amber flags identified. This property may work as an HMO but requires further investigation on the flagged areas before committing. Review each amber category carefully.';
+      } else {
+        vs.className = 'verdict-section show verdict-green';
+        document.getElementById('verdictIcon').textContent = '✅';
+        document.getElementById('verdictTitle').textContent = 'STRONG POTENTIAL';
+        document.getElementById('verdictText').textContent = 'All categories green. This property has strong HMO conversion potential. Recommended next step: instruct an architect for a feasibility assessment and proceed to the HMO Deal Analyser to confirm the numbers.';
+      }
+    }
+
+    // Toggle category cards
+    document.addEventListener('click', function(e) {
+      const header = e.target.closest('.cat-header');
+      if (header) {
+        const card = header.closest('.cat-card');
+        card.classList.toggle('open');
+        return;
+      }
+      const checkItem = e.target.closest('.check-item');
+      if (checkItem) { checkItem.classList.toggle('checked'); return; }
+    });
+
+    // Radio buttons
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('.radio-btn');
+      if (!btn) return;
+      const group = btn.closest('.radio-group');
+      if (!group) return;
+      group.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const name = group.dataset.name;
+      const value = btn.dataset.value;
+      handleRadioChange(name, value);
+    });
+
+    function handleRadioChange(name, value) {
+      // Planning flags
+      if (name === 'article4' && value === 'yes') {
+        setRag(1, 'amber', 'Amber — Article 4 applies, check planning consent');
+      } else if (name === 'article4' && value !== 'yes') {
+        setRag(1, 'green', 'Green — No Article 4 restrictions identified');
+      }
+      if (name === 'enforcement' && value === 'yes') {
+        setRag(1, 'red', 'Red — Enforcement notices on record, investigate before proceeding');
+      }
+      // Sandwiching
+      if (name === 'sandwiched' && value === 'yes') {
+        setRag(2, 'red', 'Red — Property sandwiched between HMOs, planning likely refused');
+      } else if (name === 'sandwiched' && value !== 'yes') {
+        checkDensityRag();
+      }
+      // Construction type
+      if (name === 'construction') { updateConstructionFlag(value); }
+      // Structural issues
+      if (name === 'damp' || name === 'subsidence' || name === 'listed' || name === 'flood') {
+        updateStructuralRag();
+      }
+      // Commercial
+      if (name === 'ensuite' || name === 'commercial-likely' || name === 'demand-confirmed') {
+        updateCommercialRag();
+      }
+      // Property type for PD limit
+      if (name === 'prop-type') { updatePDLimit(value); }
+      // Party wall
+      if (name === 'party-wall') {
+        document.getElementById('party-wall-val').textContent = value === 'yes' ? 'Yes — budget £1,000-£3,000 per surveyor' : 'No — not required';
+      }
+    }
+
+    function updateConstructionFlag(value) {
+      const flag = document.getElementById('construction-flag');
+      const msgs = {
+        brick: { cls: 'flag-green', text: 'Standard brick/stone construction — no mortgage restrictions expected.' },
+        timber: { cls: 'flag-amber', text: 'Timber frame — some lenders restrict mortgages on timber frame properties. Confirm with your broker.' },
+        concrete: { cls: 'flag-red', text: 'Concrete panel — many lenders will NOT mortgage concrete panel properties. This could be a deal killer. Verify before proceeding.' },
+        prefab: { cls: 'flag-red', text: 'Prefab construction — significant mortgage restrictions likely. Most HMO lenders will decline. Avoid unless specialist finance is confirmed.' },
+        steel: { cls: 'flag-amber', text: 'Steel frame — some lenders restrict or decline. Confirm with an HMO specialist broker.' },
+        unknown: { cls: 'flag-amber', text: 'Construction type unknown — confirm with a surveyor before proceeding.' }
+      };
+      const m = msgs[value] || msgs.brick;
+      flag.className = 'flag-box ' + m.cls;
+      flag.textContent = m.text;
+      if (value === 'concrete' || value === 'prefab') setRag(5, 'red', 'Red — Non-standard construction, mortgage likely declined');
+      else if (value === 'timber' || value === 'steel' || value === 'unknown') setRag(5, 'amber', 'Amber — Non-standard construction, confirm with broker');
+      else setRag(5, 'green', 'Green — Standard construction, freehold, no concerns');
+    }
+
+    function updateStructuralRag() {
+      const damp = getSelected('damp');
+      const subsidence = getSelected('subsidence');
+      const listed = getSelected('listed');
+      const flood = getSelected('flood');
+      const construction = document.getElementById('construction-type').value;
+      if (construction === 'concrete' || construction === 'prefab') return;
+      if (subsidence === 'yes' || listed === 'yes' || flood === 'zone3') {
+        setRag(5, 'red', 'Red — Significant structural or legal issues identified');
+      } else if (damp === 'yes' || flood === 'zone2' || flood === 'unknown') {
+        setRag(5, 'amber', 'Amber — Structural flags noted, investigate further');
+      } else {
+        setRag(5, 'green', 'Green — Standard construction, no structural concerns');
+      }
+    }
+
+    function updateCommercialRag() {
+      const beds = parseInt(document.getElementById('cv-beds').value) || 0;
+      const ensuite = getSelected('ensuite');
+      const commercial = getSelected('commercial-likely');
+      const demand = getSelected('demand-confirmed');
+      const bedsCheck = document.getElementById('cv-beds-check');
+      const cvVerdict = document.getElementById('cv-verdict');
+      if (beds > 0) {
+        bedsCheck.textContent = beds >= 6 ? '✓ Yes (' + beds + ' rooms)' : '✗ No (' + beds + ' rooms — aim for 6+)';
+        bedsCheck.className = beds >= 6 ? 'calc-value' : 'calc-value red';
+      }
+      const likely = beds >= 6 && (ensuite === 'yes' || ensuite === 'majority') && commercial === 'yes' && demand === 'yes';
+      const possible = beds >= 5 || commercial === 'yes';
+      cvVerdict.textContent = likely ? '✓ Yes — strong case' : possible ? '~ Possible — investigate further' : '✗ Unlikely at this room count';
+      cvVerdict.className = likely ? 'calc-value' : possible ? 'calc-value amber' : 'calc-value red';
+      if (likely) setRag(6, 'green', 'Green — Commercial valuation likely');
+      else if (possible) setRag(6, 'amber', 'Amber — Commercial valuation possible, investigate further');
+      else setRag(6, 'red', 'Red — Commercial valuation unlikely at target room count');
+    }
+
+    function getSelected(name) {
+      const group = document.querySelector('.radio-group[data-name="' + name + '"]');
+      if (!group) return null;
+      const sel = group.querySelector('.radio-btn.selected');
+      return sel ? sel.dataset.value : null;
+    }
+
+    function updatePDLimit(type) {
+      const limits = { terraced: '6m', semi: '6m', detached: '8m' };
+      document.getElementById('pd-limit').textContent = limits[type] + ' (' + type + ')';
+      updateExtCalcs();
+    }
+
+    function updateExtCalcs() {
+      const depth = parseFloat(document.getElementById('ext-depth').value) || 0;
+      const width = parseFloat(document.getElementById('ext-width').value) || 0;
+      const loftSqm = parseFloat(document.getElementById('loft-sqm').value) || 0;
+      const floorArea = parseFloat(document.getElementById('floor-area').value) || 0;
+
+      const extSqm = depth > 0 && width > 0 ? depth * width : 0;
+      document.getElementById('ext-sqm-calc').textContent = extSqm > 0 ? extSqm + ' sq m' : '—';
+      document.getElementById('ext-total').textContent = extSqm > 0 ? extSqm + ' sq m' : '—';
+      document.getElementById('loft-total').textContent = loftSqm > 0 ? loftSqm + ' sq m' : '—';
+
+      const propType = getSelected('prop-type') || 'terraced';
+      const pdLimit = propType === 'detached' ? 8 : 6;
+      const lhRequired = depth > pdLimit;
+      const lhEl = document.getElementById('larger-home-val');
+      lhEl.textContent = depth > 0 ? (lhRequired ? 'Yes (over ' + pdLimit + 'm)' : 'No (within PD rights)') : '—';
+      lhEl.className = lhRequired ? 'calc-value amber' : 'calc-value';
+
+      if (floorArea > 0 || extSqm > 0 || loftSqm > 0) {
+        const total = floorArea + extSqm + loftSqm;
+        document.getElementById('total-sqm').textContent = total + ' sq m';
+        if (extSqm > 0 || loftSqm > 0) setRag(4, 'green', 'Green — Extension potential confirmed, ' + (extSqm + loftSqm) + ' sq m additional space');
+      } else {
+        document.getElementById('total-sqm').textContent = '—';
+      }
+    }
+
+    function updateFloorCalcs() {
+      const targetBeds = parseFloat(document.getElementById('target-beds').value) || 0;
+      const minSize = parseFloat(document.getElementById('min-room-size').value) || 10;
+      const floorArea = parseFloat(document.getElementById('floor-area').value) || 0;
+
+      if (targetBeds > 0) {
+        const minRequired = Math.round(targetBeds * minSize * 1.3);
+        document.getElementById('min-area-calc').textContent = minRequired + ' sq m';
+        if (floorArea > 0) {
+          const meets = floorArea >= minRequired;
+          const check = document.getElementById('area-check');
+          check.textContent = meets ? '✓ Yes (' + floorArea + ' sq m available)' : '✗ No (' + floorArea + ' sq m vs ' + minRequired + ' sq m needed)';
+          check.className = meets ? 'calc-value' : 'calc-value red';
+          setRag(3, meets ? 'green' : 'red', meets ? 'Green — Floor area supports target room count' : 'Red — Floor area insufficient for target room count');
+        }
+        // Build room table
+        const tbody = document.getElementById('room-tbody');
+        tbody.innerHTML = '';
+        for (let i = 1; i <= targetBeds; i++) {
+          const tr = document.createElement('tr');
+          const avgPerRoom = floorArea > 0 ? ((floorArea * 0.7) / targetBeds).toFixed(1) : '—';
+          const viable = floorArea > 0 ? parseFloat(avgPerRoom) >= minSize : null;
+          tr.innerHTML = '<td>Room ' + i + '</td><td>' + minSize + '</td><td class="' + (viable === null ? '' : viable ? 'td-green' : 'td-red') + '">' + (viable === null ? '—' : viable ? '✓' : '✗') + '</td>';
+          tbody.appendChild(tr);
+        }
+      }
+      updateExtCalcs();
+    }
+
+    function checkDensityRag() {
+      const props = parseFloat(document.getElementById('street-props').value) || 0;
+      const hmos = parseFloat(document.getElementById('street-hmos').value) || 0;
+      if (props > 0 && hmos > 0) {
+        const pct = (hmos / props) * 100;
+        const calcEl = document.getElementById('density-calc');
+        calcEl.textContent = pct.toFixed(1) + '%';
+        calcEl.className = pct > 20 ? 'calc-value red' : pct > 10 ? 'calc-value amber' : 'calc-value';
+        if (pct > 20) setRag(2, 'red', 'Red — HMO density exceeds 20%, planning likely refused');
+        else if (pct > 10) setRag(2, 'amber', 'Amber — HMO density over 10%, check local policy');
+        else setRag(2, 'green', 'Green — Density under threshold, no sandwiching');
+      }
+    }
+
+    // Input listeners
+    document.getElementById('street-props').addEventListener('input', checkDensityRag);
+    document.getElementById('street-hmos').addEventListener('input', checkDensityRag);
+    document.getElementById('target-beds').addEventListener('input', updateFloorCalcs);
+    document.getElementById('floor-area').addEventListener('input', function() { updateFloorCalcs(); updateExtCalcs(); });
+    document.getElementById('min-room-size').addEventListener('input', updateFloorCalcs);
+    document.getElementById('ext-depth').addEventListener('input', updateExtCalcs);
+    document.getElementById('ext-width').addEventListener('input', updateExtCalcs);
+    document.getElementById('loft-sqm').addEventListener('input', updateExtCalcs);
+    document.getElementById('cv-beds').addEventListener('input', updateCommercialRag);
+    document.getElementById('construction-type').addEventListener('change', function() { updateConstructionFlag(this.value); updateStructuralRag(); });
+
+    // Track which categories have been touched by the student
+    const catTouched = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
+
+    // Map input IDs and radio names to category numbers
+    const inputCatMap = {
+      'street-props': 2, 'street-hmos': 2,
+      'current-beds': 3, 'floor-area': 3, 'target-beds': 3, 'min-room-size': 3, 'garden-length': 3,
+      'ext-depth': 4, 'ext-width': 4, 'loft-sqm': 4,
+      'cv-beds': 6
+    };
+    const radioCatMap = {
+      'c3use': 1, 'article4': 1, 'existing-consent': 1, 'prev-hmo': 1, 'enforcement': 1, 'use-class': 1,
+      'sandwiched': 2, 'concentration-policy': 2,
+      'loft': 3, 'garden': 3,
+      'ext-possible': 4, 'prop-type': 4, 'loft-viable': 4, 'roof-type': 4, 'dormer': 4, 'side-return': 4, 'party-wall': 4,
+      'tenure': 5, 'damp': 5, 'subsidence': 5, 'roof-condition': 5, 'flat-roof': 5, 'listed': 5, 'conservation': 5, 'flood': 5,
+      'ensuite': 6, 'commercial-likely': 6, 'demand-confirmed': 6
+    };
+
+    // Patch setRag to only colour the summary dot if that category has been touched
+    const _origSetRag = setRag;
+    function setRag(num, colour, text) {
+      // Always update the inline RAG status label
+      ragState[num] = colour;
+      const el = document.getElementById('rag-' + num);
+      el.className = 'rag-status rag-' + colour;
+      el.innerHTML = '<div class="rag-dot"></div> <span>' + text + '</span>';
+      // Only colour the summary dot if student has interacted with this category
+      if (catTouched[num]) {
+        const dot = document.getElementById('rs' + num);
+        if (dot) dot.className = 'rsi-dot ' + colour;
+      }
+      updateVerdict();
+    }
+
+    // Listen for any input/change to mark category as touched
+    document.querySelectorAll('.form-input, .form-select, .form-textarea').forEach(function(el) {
+      const cat = inputCatMap[el.id];
+      el.addEventListener('input', function() {
+        if (cat) {
+          catTouched[cat] = true;
+          // Re-run the relevant RAG now it is touched
+          const dot = document.getElementById('rs' + cat);
+          if (dot) dot.className = 'rsi-dot ' + ragState[cat];
+        }
+      });
+      el.addEventListener('change', function() {
+        if (cat) {
+          catTouched[cat] = true;
+          const dot = document.getElementById('rs' + cat);
+          if (dot) dot.className = 'rsi-dot ' + ragState[cat];
+        }
+      });
+    });
+
+    // Listen for radio button clicks to mark category as touched
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('.radio-btn');
+      if (!btn) return;
+      const group = btn.closest('.radio-group');
+      if (!group) return;
+      const name = group.dataset.name;
+      const cat = radioCatMap[name];
+      if (cat) {
+        catTouched[cat] = true;
+        // Show dot immediately on first interaction
+        const dot = document.getElementById('rs' + cat);
+        if (dot) dot.className = 'rsi-dot ' + ragState[cat];
+      }
+    }, true); // use capture so this fires before the radio handler
+
+    // Construction select
+    document.getElementById('construction-type').addEventListener('change', function() {
+      catTouched[5] = true;
+    });
+
+    // Open cat 1 by default — all summary dots start empty/grey
+    document.getElementById('cat-1').classList.add('open');
+    // Run RAG evaluations silently to set ragState, but dots stay grey until touched
+    handleRadioChange('article4', getSelected('article4') || 'no');
+    updateConstructionFlag(document.getElementById('construction-type').value);
+    updateStructuralRag();
+    updateCommercialRag();
+  </script>
+
+</body>
+</html>
