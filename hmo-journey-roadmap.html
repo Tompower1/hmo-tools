@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The HMO Journey Roadmap | The HMO Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:#0a1628;color:#fff;min-height:100vh;overflow-x:hidden;width:100%;max-width:100vw;}
+    .page-header{background:#060f1d;border-bottom:1px solid rgba(201,168,76,.15);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#C9A84C;}
+    .logo span{color:#fff;font-weight:400;font-size:14px;margin-left:8px;}
+    .header-progress{display:flex;align-items:center;gap:10px;}
+    .header-progress .hp-text{font-size:12px;color:rgba(255,255,255,.5);font-weight:600;}
+    .header-progress .hp-pct{font-size:14px;font-weight:700;color:#C9A84C;}
+    .content-area{max-width:860px;margin:0 auto;padding:40px 20px 80px;width:100%;}
+    .page-title{text-align:center;margin-bottom:32px;}
+    .page-title .badge{display:inline-block;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9A84C;margin-bottom:14px;}
+    .page-title h1{font-family:'Playfair Display',serif;font-size:32px;font-weight:800;line-height:1.2;margin-bottom:10px;}
+    .page-title p{font-size:15px;color:rgba(255,255,255,.55);line-height:1.6;max-width:620px;margin:0 auto;}
+    .page-title .stage-indicator{margin-top:16px;font-size:14px;font-weight:600;color:#C9A84C;}
+    .progress-tracker{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:36px;position:relative;padding:0 10px;}
+    .pt-node{display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;z-index:2;}
+    .pt-circle{width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:rgba(255,255,255,.4);transition:all .3s;background:rgba(10,22,40,.9);}
+    .pt-node.active .pt-circle{border-color:#C9A84C;color:#C9A84C;box-shadow:0 0 16px rgba(201,168,76,.3);}
+    .pt-node.complete .pt-circle{border-color:#C9A84C;background:#C9A84C;color:#0a1628;}
+    .pt-line{flex:1;height:2px;background:rgba(255,255,255,.08);min-width:16px;position:relative;z-index:1;}
+    .pt-line.complete{background:#C9A84C;}
+    .stage-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;margin-bottom:20px;overflow:hidden;transition:all .3s;}
+    .stage-card:hover{border-color:rgba(201,168,76,.2);}
+    .stage-card.expanded{border-color:rgba(201,168,76,.35);}
+    .stage-card.stage-complete{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.03);}
+    .stage-header{display:flex;align-items:center;gap:16px;padding:22px 28px;cursor:pointer;}
+    .stage-header:hover{background:rgba(255,255,255,.02);}
+    .stage-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#C9A84C;min-width:40px;}
+    .stage-info{flex:1;}
+    .stage-info h3{font-size:17px;font-weight:700;color:#fff;margin-bottom:4px;}
+    .stage-pills{display:flex;gap:8px;flex-wrap:wrap;}
+    .pill{padding:4px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.03em;}
+    .pill-time{background:rgba(201,168,76,.12);color:#C9A84C;border:1px solid rgba(201,168,76,.25);}
+    .pill-parallel{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.25);}
+    .stage-expand{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-size:14px;transition:all .2s;flex-shrink:0;}
+    .stage-card.expanded .stage-expand{transform:rotate(180deg);color:#C9A84C;}
+    .stage-body{display:none;padding:0 28px 28px;}
+    .stage-card.expanded .stage-body{display:block;}
+    .stage-desc{font-size:14px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:20px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);}
+    .check-item{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);margin-bottom:6px;cursor:pointer;transition:all .2s;}
+    .check-item:hover{border-color:rgba(201,168,76,.15);background:rgba(201,168,76,.02);}
+    .check-item.checked{border-color:rgba(74,222,128,.25);background:rgba(74,222,128,.03);}
+    .check-box{width:20px;height:20px;border-radius:6px;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-top:1px;}
+    .check-item.checked .check-box{border-color:#4ade80;background:#4ade80;}
+    .check-box::after{content:'';display:none;width:5px;height:9px;border:2px solid #0a1628;border-top:none;border-left:none;transform:rotate(45deg) translate(-1px,-1px);}
+    .check-item.checked .check-box::after{display:block;}
+    .check-label{font-size:13px;color:rgba(255,255,255,.7);font-weight:500;line-height:1.5;}
+    .check-item.checked .check-label{color:#4ade80;}
+    .milestone-section{margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06);}
+    .milestone-section h4{font-size:14px;font-weight:700;color:#C9A84C;margin-bottom:12px;}
+    .info-box{padding:16px 20px;border-radius:12px;margin-top:16px;}
+    .info-box h4{font-size:13px;font-weight:700;margin-bottom:6px;}
+    .info-box p{font-size:13px;line-height:1.7;font-style:italic;}
+    .info-box.warning{background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.2);}
+    .info-box.warning h4{color:#fbbf24;}
+    .info-box.warning p{color:rgba(255,255,255,.6);}
+    .info-box.ready{background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.2);}
+    .info-box.ready h4{color:#4ade80;}
+    .info-box.ready p{color:rgba(255,255,255,.6);}
+    .info-box.note{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.2);}
+    .info-box.note h4{color:#C9A84C;}
+    .info-box.note p{color:rgba(255,255,255,.6);}
+    .partner-card{border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:16px 20px;margin-top:14px;background:rgba(201,168,76,.03);}
+    .partner-card p{font-size:12px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:10px;font-style:italic;}
+    .partner-btn{display:inline-block;padding:8px 18px;border-radius:8px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);color:#C9A84C;font-size:12px;font-weight:700;text-decoration:none;transition:all .2s;}
+    .partner-btn:hover{background:rgba(201,168,76,.25);}
+    .mark-complete-btn{display:flex;align-items:center;gap:8px;margin-top:20px;padding:12px 20px;border-radius:10px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);color:#C9A84C;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;width:fit-content;}
+    .mark-complete-btn:hover{background:rgba(201,168,76,.15);}
+    .mark-complete-btn.completed{background:#C9A84C;color:#0a1628;border-color:#C9A84C;}
+    .next-stage-btn{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:10px 18px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+    .next-stage-btn:hover{border-color:rgba(201,168,76,.3);color:#C9A84C;}
+    .power-section{margin-top:48px;padding-top:36px;border-top:1px solid rgba(201,168,76,.15);}
+    .power-section h2{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;text-align:center;margin-bottom:8px;}
+    .power-section .ps-sub{font-size:14px;color:rgba(255,255,255,.5);text-align:center;margin-bottom:28px;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.6;}
+    .power-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .power-card{background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:24px;}
+    .power-card h3{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:10px;}
+    .power-card p{font-size:13px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:14px;}
+    .power-card .tag-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+    .power-card .tag{padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(201,168,76,.08);color:#C9A84C;border:1px solid rgba(201,168,76,.15);}
+    .timeline-table-wrap{margin-top:40px;overflow-x:auto;}
+    .timeline-table-wrap h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:16px;text-align:center;}
+    .timeline-table{width:100%;border-collapse:collapse;font-size:13px;}
+    .timeline-table th{background:rgba(201,168,76,.1);color:#C9A84C;padding:12px 16px;text-align:left;font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;border-bottom:1px solid rgba(201,168,76,.2);}
+    .timeline-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.65);}
+    .timeline-table tr:last-child td{border-bottom:none;font-weight:700;color:#C9A84C;}
+    .timeline-table .stage-col{color:#C9A84C;font-weight:700;}
+    .pdf-section{text-align:center;padding:32px 20px;margin-top:20px;border-top:1px solid rgba(201,168,76,.15);}
+    .pdf-section p{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:16px;font-style:italic;}
+    .pdf-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;background:#C9A84C;color:#0a1628;border:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
+    .pdf-btn:hover{background:#e8c96d;transform:translateY(-2px);box-shadow:0 4px 16px rgba(201,168,76,.3);}
+    @media(max-width:768px){
+      .page-header{padding:10px 14px;}
+      .content-area{padding:20px 14px 60px;}
+      .page-title h1{font-size:22px;}
+      .progress-tracker{overflow-x:auto;justify-content:flex-start;padding:0 4px;-webkit-overflow-scrolling:touch;}
+      .pt-circle{width:32px;height:32px;font-size:11px;}
+      .pt-line{min-width:10px;}
+      .stage-header{padding:16px 16px;gap:12px;}
+      .stage-num{font-size:22px;min-width:30px;}
+      .stage-info h3{font-size:15px;}
+      .stage-body{padding:0 16px 20px;}
+      .power-grid{grid-template-columns:1fr;}
+    }
+    @media print {
+      *, *::before, *::after { color: #111111 !important; background: #ffffff !important; border-color: #cccccc !important; box-shadow: none !important; }
+      .page-header, .pdf-section, .partner-card, .next-stage-btn, .stage-expand, .progress-tracker { display: none !important; }
+      .stage-card { border: 1px solid #999999 !important; break-inside: avoid; margin-bottom: 16px; }
+      .stage-body { display: block !important; }
+      .stage-header { background: #eeeeee !important; padding: 12px 16px !important; }
+      .stage-num { color: #111111 !important; }
+      .stage-info h3 { color: #111111 !important; }
+      .pill { background: #eeeeee !important; color: #333333 !important; border: 1px solid #cccccc !important; }
+      .stage-desc { color: #333333 !important; border-top: 1px solid #cccccc !important; }
+      .check-item { border: 1px solid #cccccc !important; background: #ffffff !important; margin-bottom: 4px !important; }
+      .check-label, .check-item.checked .check-label { color: #111111 !important; }
+      .check-box { border: 2px solid #555555 !important; background: #ffffff !important; }
+      .check-item.checked .check-box { background: #333333 !important; border-color: #333333 !important; }
+      .check-item.checked .check-box::after { border-color: #ffffff !important; display: block !important; }
+      .info-box { border: 1px solid #cccccc !important; background: #f5f5f5 !important; }
+      .info-box h4, .info-box p { color: #333333 !important; }
+      .milestone-section h4 { color: #333333 !important; }
+      .milestone-section { border-top: 1px solid #cccccc !important; }
+      .mark-complete-btn { border: 1px solid #cccccc !important; color: #333333 !important; }
+      .mark-complete-btn.completed { background: #333333 !important; color: #ffffff !important; }
+      .power-section { border-top: 1px solid #cccccc !important; }
+      .power-section h2, .power-section .ps-sub { color: #111111 !important; }
+      .power-grid { grid-template-columns: 1fr 1fr !important; }
+      .power-card { border: 1px solid #cccccc !important; background: #f9f9f9 !important; }
+      .power-card h3, .power-card p { color: #111111 !important; }
+      .tag { background: #eeeeee !important; color: #333333 !important; border: 1px solid #cccccc !important; }
+      .timeline-table-wrap h2 { color: #111111 !important; }
+      .timeline-table th { background: #dddddd !important; color: #111111 !important; }
+      .timeline-table td { color: #333333 !important; border-bottom: 1px solid #dddddd !important; }
+      .timeline-table .stage-col { color: #111111 !important; font-weight: 700 !important; }
+      .timeline-table tr:last-child td { color: #111111 !important; }
+      .page-title h1, .page-title p { color: #111111 !important; }
+      .page-title .badge { background: #eeeeee !important; color: #333333 !important; }
+      .page-title .stage-indicator { color: #333333 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="logo">The HMO Blueprint <span>| Tools</span></div>
+    <div class="header-progress">
+      <span class="hp-text">Progress:</span>
+      <span class="hp-pct" id="headerPct">0%</span>
+      <span class="hp-text" id="headerStage">Stage 1 of 10</span>
+    </div>
+  </header>
+
+  <div class="content-area">
+
+    <div class="page-title">
+      <div class="badge">Interactive Roadmap</div>
+      <h1>The HMO Journey Roadmap</h1>
+      <p>Your complete guide from deal found to refinanced &mdash; know exactly where you are at every stage</p>
+      <div class="stage-indicator" id="stageIndicator">You are on Stage 1 of 10</div>
+    </div>
+
+    <div class="progress-tracker" id="progressTracker">
+      <div class="pt-node active" data-scroll="1"><div class="pt-circle">1</div></div>
+      <div class="pt-line"></div>
+      <div class="pt-node" data-scroll="2"><div class="pt-circle">2</div></div>
+      <div class="pt-line"></div>
+      <div class="pt-node" data-scroll="3"><div class="pt-circle">3</div></div>
+      <div class="pt-line"></div>
+      <div class="pt-node" data-scroll="4"><div class="pt-circle">4</div></div>
+      <div class="pt-line"></div>
+      <div class="pt-node" data-scroll="5"><div class="pt-circle">5</div></div>
+      <div class="pt-line"></div>
+      <div class="pt-node" data-scroll="6"><div class="pt-circle">6</div></div>
+      <div class="pt-line"></div>
+      <div class="pt-node" data-scroll="7"><div class="pt-circle">7</div></div>
+      <div class="pt-line"></div>
+      <div class="pt-node" data-scroll="8"><div class="pt-circle">8</div></div>
+      <div class="pt-line"></div>
+      <div class="pt-node" data-scroll="9"><div class="pt-circle">9</div></div>
+      <div class="pt-line"></div>
+      <div class="pt-node" data-scroll="10"><div class="pt-circle">10</div></div>
+    </div>
+
+    <!-- STAGE 1 -->
+    <div class="stage-card expanded" id="stage-1">
+      <div class="stage-header">
+        <div class="stage-num">1</div>
+        <div class="stage-info"><h3>Deal Found</h3><div class="stage-pills"><span class="pill pill-time">Ongoing</span></div></div>
+        <div class="stage-expand">&#9660;</div>
+      </div>
+      <div class="stage-body">
+        <p class="stage-desc">You have identified a 3-bed property in a viable market that has passed the HMO Potential Checker and the Numbers Calculator Pro.</p>
+        <div class="check-item" data-stage="1"><div class="check-box"></div><div class="check-label">Market Viability Scorecard completed and area confirmed green or amber</div></div>
+        <div class="check-item" data-stage="1"><div class="check-box"></div><div class="check-label">7-Day Action Plan completed</div></div>
+        <div class="check-item" data-stage="1"><div class="check-box"></div><div class="check-label">HMO Potential Checker passed</div></div>
+        <div class="check-item" data-stage="1"><div class="check-box"></div><div class="check-label">Numbers Calculator Pro confirms deal stacks up</div></div>
+        <div class="check-item" data-stage="1"><div class="check-box"></div><div class="check-label">Finance confirmed — cash or mortgage in principle in place</div></div>
+        <div class="check-item" data-stage="1"><div class="check-box"></div><div class="check-label">Solicitor identified and ready to instruct</div></div>
+        <div class="info-box warning"><h4>&#9888; Watch Out</h4><p>Falling in love with a property before the numbers work. Emotion is not a deal qualification tool. If the numbers do not stack — walk away.</p></div>
+        <div class="info-box ready"><h4>&#10003; Ready for Stage 2 when:</h4><p>You have a property that passes all checks and you are financially ready to make an offer.</p></div>
+        <div class="partner-card"><p>Need a solicitor or mortgage broker ready to move? Access our vetted HMO power team.</p><a href="https://providehomespartners.co.uk/powerteam" target="_blank" class="partner-btn">View Power Team Directory &rarr;</a></div>
+        <div class="partner-card"><p>Need bridging finance or a mortgage in principle? Fairgroves Finance specialise in HMO investment finance.</p><a href="https://www.fairgrovesfinance.co.uk" target="_blank" class="partner-btn">Visit Fairgroves Finance &rarr;</a></div>
+        <div class="mark-complete-btn" data-complete="1"><span class="mc-icon">&#9675;</span> Mark Stage Complete</div>
+        <div class="next-stage-btn" data-scroll="2">Next Stage &rarr;</div>
+      </div>
+    </div>
+
+    <!-- STAGE 2 -->
+    <div class="stage-card" id="stage-2">
+      <div class="stage-header">
+        <div class="stage-num">2</div>
+        <div class="stage-info"><h3>Offer &amp; Negotiation</h3><div class="stage-pills"><span class="pill pill-time">1-7 days</span></div></div>
+        <div class="stage-expand">&#9660;</div>
+      </div>
+      <div class="stage-body">
+        <p class="stage-desc">You make your offer and negotiate to secure the property at a price that makes the BRRR numbers work.</p>
+        <div class="check-item" data-stage="2"><div class="check-box"></div><div class="check-label">Comparable sold prices researched to anchor my offer</div></div>
+        <div class="check-item" data-stage="2"><div class="check-box"></div><div class="check-label">Maximum acceptable purchase price calculated on Calculator Pro</div></div>
+        <div class="check-item" data-stage="2"><div class="check-box"></div><div class="check-label">Opening offer made below my maximum</div></div>
+        <div class="check-item" data-stage="2"><div class="check-box"></div><div class="check-label">Agent informed I am a serious buyer — finance confirmed</div></div>
+        <div class="check-item" data-stage="2"><div class="check-box"></div><div class="check-label">Offer accepted</div></div>
+        <div class="check-item" data-stage="2"><div class="check-box"></div><div class="check-label">Solicitor instructed immediately</div></div>
+        <div class="info-box warning"><h4>&#9888; Watch Out</h4><p>Overpaying to secure the deal. If the purchase price pushes the BRRR numbers below your minimum return — the deal does not work regardless of how much you like the property.</p></div>
+        <div class="info-box ready"><h4>&#10003; Ready for Stage 3 when:</h4><p>Offer accepted and solicitor instructed.</p></div>
+        <div class="mark-complete-btn" data-complete="2"><span class="mc-icon">&#9675;</span> Mark Stage Complete</div>
+        <div class="next-stage-btn" data-scroll="3">Next Stage &rarr;</div>
+      </div>
+    </div>
+
+    <!-- STAGE 3 -->
+    <div class="stage-card" id="stage-3">
+      <div class="stage-header">
+        <div class="stage-num">3</div>
+        <div class="stage-info"><h3>Legal &amp; Survey</h3><div class="stage-pills"><span class="pill pill-time">8-16 weeks</span><span class="pill pill-parallel">Begin Stages 5 &amp; 6 now</span></div></div>
+        <div class="stage-expand">&#9660;</div>
+      </div>
+      <div class="stage-body">
+        <p class="stage-desc">Conveyancing begins. Your solicitor investigates title and searches. Your surveyor assesses the property. Begin architect and contractor conversations in parallel.</p>
+        <div class="check-item" data-stage="3"><div class="check-box"></div><div class="check-label">Solicitor instructed — all property details provided</div></div>
+        <div class="check-item" data-stage="3"><div class="check-box"></div><div class="check-label">Surveyor instructed — full structural survey booked</div></div>
+        <div class="check-item" data-stage="3"><div class="check-box"></div><div class="check-label">Mortgage application submitted (if applicable)</div></div>
+        <div class="check-item" data-stage="3"><div class="check-box"></div><div class="check-label">Searches reviewed — planning, drainage, environmental, local authority</div></div>
+        <div class="check-item" data-stage="3"><div class="check-box"></div><div class="check-label">Survey results reviewed — any issues to renegotiate on?</div></div>
+        <div class="check-item" data-stage="3"><div class="check-box"></div><div class="check-label">Architect briefed and initial conversations started</div></div>
+        <div class="check-item" data-stage="3"><div class="check-box"></div><div class="check-label">Contractor outreach begun — do not wait for completion</div></div>
+        <div class="check-item" data-stage="3"><div class="check-box"></div><div class="check-label">Contracts exchanged</div></div>
+        <div class="check-item" data-stage="3"><div class="check-box"></div><div class="check-label">Completion date set</div></div>
+        <div class="info-box warning"><h4>&#9888; Watch Out</h4><p>Survey reveals major structural issues that were not visible on the viewing. Do not ignore survey findings — use them to renegotiate or walk away.</p></div>
+        <div class="info-box ready"><h4>&#10003; Ready for Stage 4 when:</h4><p>Contracts exchanged and completion date confirmed.</p></div>
+        <div class="partner-card"><p>Need a solicitor, surveyor or architect with HMO experience? Access our power team directory.</p><a href="https://providehomespartners.co.uk/powerteam" target="_blank" class="partner-btn">View Power Team Directory &rarr;</a></div>
+        <div class="partner-card"><p>Arranging bridging finance or a purchase mortgage? Fairgroves Finance can move fast.</p><a href="https://www.fairgrovesfinance.co.uk" target="_blank" class="partner-btn">Visit Fairgroves Finance &rarr;</a></div>
+        <div class="mark-complete-btn" data-complete="3"><span class="mc-icon">&#9675;</span> Mark Stage Complete</div>
+        <div class="next-stage-btn" data-scroll="4">Next Stage &rarr;</div>
+      </div>
+    </div>
+
+    <!-- STAGE 4 -->
+    <div class="stage-card" id="stage-4">
+      <div class="stage-header">
+        <div class="stage-num">4</div>
+        <div class="stage-info"><h3>Purchase Complete</h3><div class="stage-pills"><span class="pill pill-time">Completion day</span></div></div>
+        <div class="stage-expand">&#9660;</div>
+      </div>
+      <div class="stage-body">
+        <p class="stage-desc">You own the property. Keys in hand. The clock starts now — every day unconverted is a day it is not generating income.</p>
+        <div class="check-item" data-stage="4"><div class="check-box"></div><div class="check-label">Keys collected on completion day</div></div>
+        <div class="check-item" data-stage="4"><div class="check-box"></div><div class="check-label">Property visited and photographed immediately</div></div>
+        <div class="check-item" data-stage="4"><div class="check-box"></div><div class="check-label">Utilities transferred to my name — gas, electric, water</div></div>
+        <div class="check-item" data-stage="4"><div class="check-box"></div><div class="check-label">Building insurance confirmed and in place from day one</div></div>
+        <div class="check-item" data-stage="4"><div class="check-box"></div><div class="check-label">Insurance confirmed to cover property under conversion</div></div>
+        <div class="check-item" data-stage="4"><div class="check-box"></div><div class="check-label">Council notified — council tax during conversion period</div></div>
+        <div class="info-box warning"><h4>&#9888; Watch Out</h4><p>Delays in getting started. Have your architect and contractors ready before completion so you can hit the ground running the day you get the keys.</p></div>
+        <div class="info-box ready"><h4>&#10003; Ready for Stage 5 when:</h4><p>Property is owned, insured and you are ready to begin planning and design.</p></div>
+        <div class="mark-complete-btn" data-complete="4"><span class="mc-icon">&#9675;</span> Mark Stage Complete</div>
+        <div class="next-stage-btn" data-scroll="5">Next Stage &rarr;</div>
+      </div>
+    </div>
+
+    <!-- STAGE 5 -->
+    <div class="stage-card" id="stage-5">
+      <div class="stage-header">
+        <div class="stage-num">5</div>
+        <div class="stage-info"><h3>Planning &amp; Design</h3><div class="stage-pills"><span class="pill pill-time">4-16 weeks</span><span class="pill pill-parallel">Start this during Stage 3</span></div></div>
+        <div class="stage-expand">&#9660;</div>
+      </div>
+      <div class="stage-body">
+        <p class="stage-desc">Work with your architect to design the conversion. Confirm your planning route — permitted development or full planning application.</p>
+        <div class="check-item" data-stage="5"><div class="check-box"></div><div class="check-label">Architect instructed — brief provided including target room count and en-suite spec</div></div>
+        <div class="check-item" data-stage="5"><div class="check-box"></div><div class="check-label">Initial drawings reviewed and feedback given</div></div>
+        <div class="check-item" data-stage="5"><div class="check-box"></div><div class="check-label">Planning route confirmed — permitted development or full application</div></div>
+        <div class="check-item" data-stage="5"><div class="check-box"></div><div class="check-label">Planning application submitted if required</div></div>
+        <div class="check-item" data-stage="5"><div class="check-box"></div><div class="check-label">Planning confirmed</div></div>
+        <div class="check-item" data-stage="5"><div class="check-box"></div><div class="check-label">Final drawings agreed</div></div>
+        <div class="check-item" data-stage="5"><div class="check-box"></div><div class="check-label">Detailed drawings produced for contractor quotes</div></div>
+        <div class="check-item" data-stage="5"><div class="check-box"></div><div class="check-label">Contractor outreach underway using detailed drawings</div></div>
+        <div class="info-box warning"><h4>&#9888; Watch Out</h4><p>Underspecifying the brief to your architect. Be clear from the start about your target room count, en-suite specification and commercial valuation intent. A vague brief produces vague drawings.</p></div>
+        <div class="info-box ready"><h4>&#10003; Ready for Stage 6 when:</h4><p>Planning confirmed and final drawings agreed.</p></div>
+        <div class="partner-card"><p>Need an architect or planning consultant with HMO experience? Access our power team directory.</p><a href="https://providehomespartners.co.uk/powerteam" target="_blank" class="partner-btn">View Power Team Directory &rarr;</a></div>
+        <div class="mark-complete-btn" data-complete="5"><span class="mc-icon">&#9675;</span> Mark Stage Complete</div>
+        <div class="next-stage-btn" data-scroll="6">Next Stage &rarr;</div>
+      </div>
+    </div>
+
+    <!-- STAGE 6 -->
+    <div class="stage-card" id="stage-6">
+      <div class="stage-header">
+        <div class="stage-num">6</div>
+        <div class="stage-info"><h3>Contractor Selection &amp; Build Preparation</h3><div class="stage-pills"><span class="pill pill-time">2-6 weeks</span><span class="pill pill-parallel">Start this during Stage 3</span></div></div>
+        <div class="stage-expand">&#9660;</div>
+      </div>
+      <div class="stage-body">
+        <p class="stage-desc">Select your contractor and prepare for the build to start. Due diligence here saves significant time and cost during the conversion.</p>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Minimum 3 quotes obtained using Contractor Brief Template</div></div>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Each contractor vetted — references checked, previous HMO work visited</div></div>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Quotes compared like-for-like</div></div>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Preferred contractor selected — not automatically the cheapest</div></div>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Payment schedule agreed — no large upfront payments</div></div>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Project timeline agreed with key milestones</div></div>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Variation process agreed in writing</div></div>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Materials ordered and delivery dates confirmed</div></div>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Contract signed</div></div>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Start date confirmed</div></div>
+        <div class="check-item" data-stage="6"><div class="check-box"></div><div class="check-label">Neighbours notified of planned works</div></div>
+        <div class="info-box warning"><h4>&#9888; Watch Out</h4><p>Choosing the cheapest quote. A contractor who quotes low and overruns on time and extras will cost you far more than one who quoted slightly higher and delivered on programme.</p></div>
+        <div class="info-box ready"><h4>&#10003; Ready for Stage 7 when:</h4><p>Contractor appointed, contract signed, start date confirmed and materials ordered.</p></div>
+        <div class="partner-card"><p>Need a trusted HMO contractor or project manager? Access our power team directory.</p><a href="https://providehomespartners.co.uk/powerteam" target="_blank" class="partner-btn">View Power Team Directory &rarr;</a></div>
+        <div class="mark-complete-btn" data-complete="6"><span class="mc-icon">&#9675;</span> Mark Stage Complete</div>
+        <div class="next-stage-btn" data-scroll="7">Next Stage &rarr;</div>
+      </div>
+    </div>
+
+    <!-- STAGE 7 -->
+    <div class="stage-card" id="stage-7">
+      <div class="stage-header">
+        <div class="stage-num">7</div>
+        <div class="stage-info"><h3>The Conversion</h3><div class="stage-pills"><span class="pill pill-time">3-6 months typically</span></div></div>
+        <div class="stage-expand">&#9660;</div>
+      </div>
+      <div class="stage-body">
+        <p class="stage-desc">Your property is being transformed from a 3-bed house into a 6-8 bed HMO. Regular site visits, clear communication and proactive problem solving are essential throughout.</p>
+        <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Regular site visits — minimum weekly, ideally twice weekly</div></div>
+        <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Every visit photographed and dated</div></div>
+        <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Progress tracked against milestones using Refurb Timeline Tracker</div></div>
+        <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Budget tracked against Conversion Cost Calculator — overruns flagged early</div></div>
+        <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">All variations agreed in writing before they happen</div></div>
+        <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Compliance work monitored throughout — fire doors, smoke alarms, room sizes</div></div>
+        <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Building control inspections booked at correct stages</div></div>
+        <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Begin compliance checklist and licence application during this stage</div></div>
+        <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Begin marketing rooms during final weeks of build</div></div>
+        <div class="milestone-section">
+          <h4>Key Build Milestones</h4>
+          <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Strip out complete</div></div>
+          <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Groundworks complete (if extension)</div></div>
+          <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Structure up and weathertight</div></div>
+          <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">First fix complete — electrics, plumbing, heating</div></div>
+          <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Plasterwork complete</div></div>
+          <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Second fix complete</div></div>
+          <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Decoration complete</div></div>
+          <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Fixtures and fittings installed</div></div>
+          <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Snagging complete</div></div>
+          <div class="check-item" data-stage="7"><div class="check-box"></div><div class="check-label">Final sign off</div></div>
+        </div>
+        <div class="info-box warning"><h4>&#9888; Watch Out</h4><p>Losing track of budget and timeline. Small overruns compound quickly. Use the Refurb Timeline Tracker weekly and address issues as they arise.</p></div>
+        <div class="info-box ready"><h4>&#10003; Ready for Stage 8 when:</h4><p>All works complete, snagging done and property ready for licensing inspection.</p></div>
+        <div class="mark-complete-btn" data-complete="7"><span class="mc-icon">&#9675;</span> Mark Stage Complete</div>
+        <div class="next-stage-btn" data-scroll="8">Next Stage &rarr;</div>
+      </div>
+    </div>
+
+    <!-- STAGE 8 -->
+    <div class="stage-card" id="stage-8">
+      <div class="stage-header">
+        <div class="stage-num">8</div>
+        <div class="stage-info"><h3>Licensing &amp; Compliance</h3><div class="stage-pills"><span class="pill pill-time">2-8 weeks</span><span class="pill pill-parallel">Begin this during Stage 7</span></div></div>
+        <div class="stage-expand">&#9660;</div>
+      </div>
+      <div class="stage-body">
+        <p class="stage-desc">Every legal requirement must be in place before a single tenant moves in. Apply for your HMO licence and obtain all required certificates.</p>
+        <div class="check-item" data-stage="8"><div class="check-box"></div><div class="check-label">HMO licence application submitted to local council</div></div>
+        <div class="check-item" data-stage="8"><div class="check-box"></div><div class="check-label">Gas safety certificate obtained — Gas Safe registered engineer</div></div>
+        <div class="check-item" data-stage="8"><div class="check-box"></div><div class="check-label">EICR obtained — Electrical Installation Condition Report</div></div>
+        <div class="check-item" data-stage="8"><div class="check-box"></div><div class="check-label">EPC obtained — Energy Performance Certificate</div></div>
+        <div class="check-item" data-stage="8"><div class="check-box"></div><div class="check-label">Fire risk assessment completed</div></div>
+        <div class="check-item" data-stage="8"><div class="check-box"></div><div class="check-label">All fire doors correctly installed and certified</div></div>
+        <div class="check-item" data-stage="8"><div class="check-box"></div><div class="check-label">Interlinked smoke and heat alarms installed and tested</div></div>
+        <div class="check-item" data-stage="8"><div class="check-box"></div><div class="check-label">Emergency lighting in place where required</div></div>
+        <div class="check-item" data-stage="8"><div class="check-box"></div><div class="check-label">All room sizes confirmed to meet minimum HMO requirements</div></div>
+        <div class="check-item" data-stage="8"><div class="check-box"></div><div class="check-label">HMO licence received from council</div></div>
+        <div class="info-box warning"><h4>&#9888; Watch Out</h4><p>Applying for your licence after the build is complete and discovering a compliance issue requiring remedial work. Start the compliance checklist during Stage 7 — not after it.</p></div>
+        <div class="info-box ready"><h4>&#10003; Ready for Stage 9 when:</h4><p>HMO licence received and all certificates in place.</p></div>
+        <div class="partner-card"><p>Need a fire safety consultant or compliance specialist? Access our power team directory.</p><a href="https://providehomespartners.co.uk/powerteam" target="_blank" class="partner-btn">View Power Team Directory &rarr;</a></div>
+        <div class="mark-complete-btn" data-complete="8"><span class="mc-icon">&#9675;</span> Mark Stage Complete</div>
+        <div class="next-stage-btn" data-scroll="9">Next Stage &rarr;</div>
+      </div>
+    </div>
+
+    <!-- STAGE 9 -->
+    <div class="stage-card" id="stage-9">
+      <div class="stage-header">
+        <div class="stage-num">9</div>
+        <div class="stage-info"><h3>Letting</h3><div class="stage-pills"><span class="pill pill-time">2-6 weeks to fully let</span><span class="pill pill-parallel">Begin marketing during Stage 8</span></div></div>
+        <div class="stage-expand">&#9660;</div>
+      </div>
+      <div class="stage-body">
+        <p class="stage-desc">Your property is licensed and compliant. Fill the rooms with quality tenants. The goal is to have all rooms reserved before or immediately after completion.</p>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">Property photographed professionally</div></div>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">Listings created on SpareRoom — primary platform for HMO rooms</div></div>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">Rooms priced correctly against local market research</div></div>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">All tenants fully referenced — credit, employment, previous landlord</div></div>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">Tenancy agreements issued — AST for each room</div></div>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">Room inventory completed before each tenant moves in</div></div>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">First month rent and deposit collected before keys handed over</div></div>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">All deposits registered with government approved scheme</div></div>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">Right to rent checks completed for all tenants</div></div>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">Bills set up in your name — utilities, broadband, TV licence</div></div>
+        <div class="check-item" data-stage="9"><div class="check-box"></div><div class="check-label">Welcome pack sent to each tenant on move-in day</div></div>
+        <div class="info-box warning"><h4>&#9888; Watch Out</h4><p>Rushing tenant selection to fill rooms quickly. A bad tenant in an HMO affects every other tenant. The cost of an eviction far exceeds a few weeks of void.</p></div>
+        <div class="info-box ready"><h4>&#10003; Ready for Stage 10 when:</h4><p>All rooms let, tenancy agreements signed, deposits registered and rental income flowing.</p></div>
+        <div class="partner-card"><p>Need a specialist HMO letting agent? Access our power team directory.</p><a href="https://providehomespartners.co.uk/powerteam" target="_blank" class="partner-btn">View Power Team Directory &rarr;</a></div>
+        <div class="mark-complete-btn" data-complete="9"><span class="mc-icon">&#9675;</span> Mark Stage Complete</div>
+        <div class="next-stage-btn" data-scroll="10">Next Stage &rarr;</div>
+      </div>
+    </div>
+
+    <!-- STAGE 10 -->
+    <div class="stage-card" id="stage-10">
+      <div class="stage-header">
+        <div class="stage-num">10</div>
+        <div class="stage-info"><h3>Refinance</h3><div class="stage-pills"><span class="pill pill-time">2-4 weeks</span></div></div>
+        <div class="stage-expand">&#9660;</div>
+      </div>
+      <div class="stage-body">
+        <p class="stage-desc">The most powerful moment in the BRRR strategy. Your 3-bed purchase has become a fully licensed 6-8 bed HMO. The commercial valuation reflects this transformation — allowing you to pull your capital back out and repeat the process.</p>
+        <div class="check-item" data-stage="10"><div class="check-box"></div><div class="check-label">Mortgage broker instructed — specialist HMO refinance products identified</div></div>
+        <div class="check-item" data-stage="10"><div class="check-box"></div><div class="check-label">Refinance pack prepared — all certificates, licence, tenancy agreements, rent schedule</div></div>
+        <div class="check-item" data-stage="10"><div class="check-box"></div><div class="check-label">Valuation booked — commercial basis confirmed with broker</div></div>
+        <div class="check-item" data-stage="10"><div class="check-box"></div><div class="check-label">Valuation reviewed — reflects income-generating potential of the property</div></div>
+        <div class="check-item" data-stage="10"><div class="check-box"></div><div class="check-label">Refinance mortgage offer issued</div></div>
+        <div class="check-item" data-stage="10"><div class="check-box"></div><div class="check-label">Legal work completed</div></div>
+        <div class="check-item" data-stage="10"><div class="check-box"></div><div class="check-label">Capital released — amount pulled back out calculated</div></div>
+        <div class="check-item" data-stage="10"><div class="check-box"></div><div class="check-label">Cash-on-cash return calculated — how much of my money is still in the deal?</div></div>
+        <div class="check-item" data-stage="10"><div class="check-box"></div><div class="check-label">Portfolio tracker updated — total portfolio value and monthly income</div></div>
+        <div class="info-box note"><h4>&#9733; Commercial Valuation Note</h4><p>A fully converted 6-8 bed HMO with en-suites, fire doors, interlinked alarms and an HMO licence is valued on its income-generating potential — not just bricks and mortar. This is what makes the BRRR strategy so powerful. The gap between your all-in cost and the commercial valuation is where your wealth is created.</p></div>
+        <div class="info-box warning"><h4>&#9888; Watch Out</h4><p>Refinancing before the property is fully let. Most lenders require full occupancy and at least one month of rental income evidence before lending. Make sure all rooms are let before instructing your broker.</p></div>
+        <div class="info-box ready"><h4>&#10003; Ready to start again when:</h4><p>Refinance complete, capital returned to your account. Go back to Stage 1.</p></div>
+        <div class="partner-card"><p>Ready to refinance? Fairgroves Finance specialise in HMO refinance products and can maximise the capital you release.</p><a href="https://www.fairgrovesfinance.co.uk" target="_blank" class="partner-btn">Visit Fairgroves Finance &rarr;</a></div>
+        <div class="mark-complete-btn" data-complete="10"><span class="mc-icon">&#9675;</span> Mark Stage Complete</div>
+      </div>
+    </div>
+
+    <!-- POWER TEAM -->
+    <div class="power-section">
+      <h2>Our Power Team &amp; Finance Partners</h2>
+      <p class="ps-sub">The same professionals Nick and Simon use on every project — personally vetted across 100+ HMO conversions</p>
+      <div class="power-grid">
+        <div class="power-card">
+          <h3>The HMO Blueprint Power Team</h3>
+          <p>Solicitors, mortgage brokers, architects, planning consultants, surveyors, contractors and letting agents — all with proven HMO experience.</p>
+          <div class="tag-list">
+            <span class="tag">Solicitors</span><span class="tag">Architects</span><span class="tag">Planning</span><span class="tag">Surveyors</span><span class="tag">Contractors</span><span class="tag">Fire Safety</span><span class="tag">Letting Agents</span>
+          </div>
+          <a href="https://providehomespartners.co.uk/powerteam" target="_blank" class="partner-btn">View Power Team Directory &rarr;</a>
+        </div>
+        <div class="power-card">
+          <h3>Fairgroves Finance — HMO Specialist</h3>
+          <p>From bridging finance to long-term HMO mortgages — Fairgroves Finance understand the specific requirements of HMO lending and can help you move fast at every stage.</p>
+          <div class="tag-list">
+            <span class="tag">Bridging Finance</span><span class="tag">HMO Mortgages</span><span class="tag">Refinance</span><span class="tag">Portfolio Finance</span><span class="tag">Buy-to-Let</span>
+          </div>
+          <a href="https://www.fairgrovesfinance.co.uk" target="_blank" class="partner-btn">Visit Fairgroves Finance &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMELINE TABLE -->
+    <div class="timeline-table-wrap">
+      <h2>Timeline Summary</h2>
+      <table class="timeline-table">
+        <thead><tr><th>Stage</th><th>Name</th><th>Timeframe</th><th>Parallel?</th></tr></thead>
+        <tbody>
+          <tr><td class="stage-col">1</td><td>Deal Found</td><td>Ongoing</td><td></td></tr>
+          <tr><td class="stage-col">2</td><td>Offer &amp; Negotiation</td><td>1-7 days</td><td></td></tr>
+          <tr><td class="stage-col">3</td><td>Legal &amp; Survey</td><td>8-16 weeks</td><td>Begin 5 &amp; 6 now</td></tr>
+          <tr><td class="stage-col">4</td><td>Purchase Complete</td><td>Completion day</td><td></td></tr>
+          <tr><td class="stage-col">5</td><td>Planning &amp; Design</td><td>4-16 weeks</td><td>Runs with Stage 3</td></tr>
+          <tr><td class="stage-col">6</td><td>Contractor Selection</td><td>2-6 weeks</td><td>Runs with Stage 3</td></tr>
+          <tr><td class="stage-col">7</td><td>The Conversion</td><td>3-6 months</td><td>Begin 8 during this</td></tr>
+          <tr><td class="stage-col">8</td><td>Licensing &amp; Compliance</td><td>2-8 weeks</td><td>Begin during Stage 7</td></tr>
+          <tr><td class="stage-col">9</td><td>Letting</td><td>2-6 weeks</td><td>Begin during Stage 8</td></tr>
+          <tr><td class="stage-col">10</td><td>Refinance</td><td>2-4 weeks</td><td></td></tr>
+          <tr><td></td><td>Total typical timeline</td><td>9-15 months</td><td>Faster with parallel working</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PDF -->
+    <div class="pdf-section">
+      <p>Save a PDF copy of your roadmap progress at any stage.</p>
+      <button class="pdf-btn" id="pdfBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Save as PDF
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'hmo_roadmap_progress';
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+      } catch(e) {}
+      return { completedStages: [], checkedItems: {} };
+    }
+
+    function saveState() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+    }
+
+    function initFromState() {
+      state.completedStages.forEach(s => {
+        const card = document.getElementById('stage-' + s);
+        if (!card) return;
+        card.classList.add('stage-complete');
+        const btn = card.querySelector('.mark-complete-btn');
+        if (btn) { btn.classList.add('completed'); btn.innerHTML = '<span class="mc-icon">&#10003;</span> Stage Complete'; }
+      });
+      Object.keys(state.checkedItems).forEach(stageNum => {
+        const card = document.getElementById('stage-' + stageNum);
+        if (!card) return;
+        const items = card.querySelectorAll('.check-item');
+        (state.checkedItems[stageNum] || []).forEach(idx => {
+          if (items[idx]) items[idx].classList.add('checked');
+        });
+      });
+      updateTracker();
+    }
+
+    function scrollToStage(num) {
+      const el = document.getElementById('stage-' + num);
+      if (el) {
+        el.classList.add('expanded');
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+      }
+    }
+
+    function updateTracker() {
+      const nodes = document.querySelectorAll('.pt-node');
+      const lines = document.querySelectorAll('.pt-line');
+      const completed = [...state.completedStages].sort((a,b) => a-b);
+      const currentStage = completed.length > 0 ? Math.min(completed[completed.length-1] + 1, 10) : 1;
+      nodes.forEach((node, i) => {
+        const s = i + 1;
+        node.classList.remove('active', 'complete');
+        const circle = node.querySelector('.pt-circle');
+        if (state.completedStages.includes(s)) {
+          node.classList.add('complete');
+          circle.innerHTML = '&#10003;';
+        } else if (s === currentStage) {
+          node.classList.add('active');
+          circle.textContent = s;
+        } else {
+          circle.textContent = s;
+        }
+      });
+      lines.forEach((line, i) => line.classList.toggle('complete', state.completedStages.includes(i+1)));
+      const pct = Math.round((completed.length / 10) * 100);
+      document.getElementById('headerPct').textContent = pct + '%';
+      document.getElementById('headerStage').textContent = 'Stage ' + currentStage + ' of 10';
+      document.getElementById('stageIndicator').textContent = 'You are on Stage ' + currentStage + ' of 10';
+    }
+
+    // Event delegation
+    document.addEventListener('click', function(e) {
+      // Stage header toggle
+      const stageHeader = e.target.closest('.stage-header');
+      if (stageHeader) {
+        stageHeader.closest('.stage-card').classList.toggle('expanded');
+        return;
+      }
+
+      // Check items
+      const checkItem = e.target.closest('.check-item');
+      if (checkItem) {
+        checkItem.classList.toggle('checked');
+        const stageNum = checkItem.dataset.stage;
+        if (stageNum) {
+          const card = document.getElementById('stage-' + stageNum);
+          const items = card.querySelectorAll('.check-item');
+          const checkedIndices = [];
+          items.forEach((item, idx) => { if (item.classList.contains('checked')) checkedIndices.push(idx); });
+          state.checkedItems[stageNum] = checkedIndices;
+          saveState();
+        }
+        return;
+      }
+
+      // Mark complete buttons
+      const completeBtn = e.target.closest('.mark-complete-btn');
+      if (completeBtn) {
+        const stageNum = parseInt(completeBtn.dataset.complete);
+        const idx = state.completedStages.indexOf(stageNum);
+        if (idx === -1) { state.completedStages.push(stageNum); }
+        else { state.completedStages.splice(idx, 1); }
+        saveState();
+        const card = document.getElementById('stage-' + stageNum);
+        if (state.completedStages.includes(stageNum)) {
+          card.classList.add('stage-complete');
+          completeBtn.classList.add('completed');
+          completeBtn.innerHTML = '<span class="mc-icon">&#10003;</span> Stage Complete';
+        } else {
+          card.classList.remove('stage-complete');
+          completeBtn.classList.remove('completed');
+          completeBtn.innerHTML = '<span class="mc-icon">&#9675;</span> Mark Stage Complete';
+        }
+        updateTracker();
+        return;
+      }
+
+      // Scroll buttons (next stage + tracker nodes)
+      const scrollBtn = e.target.closest('[data-scroll]');
+      if (scrollBtn) {
+        scrollToStage(parseInt(scrollBtn.dataset.scroll));
+        return;
+      }
+
+      // PDF button
+      if (e.target.closest('#pdfBtn')) {
+        // Expand all stages for print
+        document.querySelectorAll('.stage-card').forEach(c => c.classList.add('expanded'));
+        setTimeout(() => window.print(), 300);
+        return;
+      }
+    });
+
+    initFromState();
+  </script>
+
+</body>
+</html>
