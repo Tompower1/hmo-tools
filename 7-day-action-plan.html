@@ -173,18 +173,33 @@
     }
 
     @media print {
-      * { color: #111111 !important; background: #ffffff !important; border-color: #cccccc !important; box-shadow: none !important; }
-      .page-header, .pdf-section, .complete-day-btn, .add-row-btn, .progress-tracker, input[type=range] { display: none !important; }
-      .day-card { border: 1px solid #cccccc !important; break-inside: avoid; margin-bottom: 12px; }
+      *, *::before, *::after { color: #111111 !important; background: #ffffff !important; border-color: #cccccc !important; box-shadow: none !important; }
+      .page-header, .pdf-section, .complete-day-btn, .add-row-btn, .progress-tracker, input[type=range], .day-expand { display: none !important; }
+      .day-card { border: 1px solid #999999 !important; break-inside: avoid; margin-bottom: 16px; }
       .day-content { display: block !important; }
-      .day-header { background: #f5f5f5 !important; }
-      .day-number { background: #eeeeee !important; }
+      .day-header { background: #eeeeee !important; padding: 12px 16px !important; }
+      .day-number { background: #dddddd !important; color: #111111 !important; }
+      .day-title h3, .day-title .subtitle, .form-label { color: #111111 !important; }
+      .day-title .time-badge { background: #eeeeee !important; color: #333333 !important; border: 1px solid #cccccc !important; }
       .form-input, .table-input, .form-select, .form-textarea { background: #f9f9f9 !important; color: #111111 !important; border: 1px solid #cccccc !important; }
-      .check-box { border: 2px solid #333333 !important; background: #ffffff !important; }
-      .check-item.checked .check-box { background: #333333 !important; }
-      .check-item.checked .check-box::after { border-color: #ffffff !important; }
-      .data-table th { background: #eeeeee !important; }
-      .script-box, .intro-block, .goal-badge, .next-steps, .ns-card { background: #f9f9f9 !important; border: 1px solid #cccccc !important; }
+      .check-item { border: 1px solid #cccccc !important; background: #ffffff !important; }
+      .check-label, .check-item.checked .check-label { color: #111111 !important; }
+      .check-box { border: 2px solid #555555 !important; background: #ffffff !important; }
+      .check-item.checked .check-box { background: #333333 !important; border-color: #333333 !important; }
+      .check-item.checked .check-box::after { border-color: #ffffff !important; display: block !important; }
+      .data-table th { background: #dddddd !important; color: #111111 !important; }
+      .data-table td { color: #333333 !important; border-bottom: 1px solid #dddddd !important; }
+      .table-wrapper { border: 1px solid #cccccc !important; }
+      .script-box, .intro-block, .goal-badge, .next-steps, .ns-card, .viewing-card { background: #f5f5f5 !important; border: 1px solid #cccccc !important; }
+      .script-box .script-label, .script-box .script-text, .intro-block p { color: #333333 !important; }
+      .goal-badge .goal-text, .next-steps h4, .ns-card h5 { color: #333333 !important; }
+      .viewing-card-header h4, .vc-badge { color: #111111 !important; }
+      .criteria-item { border: 1px solid #cccccc !important; background: #ffffff !important; }
+      .criteria-text { color: #333333 !important; }
+      .decision-btn { border: 1px solid #cccccc !important; color: #333333 !important; background: #ffffff !important; }
+      .page-title h1, .page-title p, .page-title .badge { color: #111111 !important; }
+      .section-divider { background: #cccccc !important; }
+      .pipeline-note p { color: #444444 !important; }
     }
   </style>
 </head>
